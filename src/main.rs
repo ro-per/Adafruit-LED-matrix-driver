@@ -718,17 +718,17 @@ pub fn main() {
 
                 }
                 
-                let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+                // let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
 
                 // GPIO::clear_bits(&mut io, color_clk_mask);
 
-                io.write_masked_bits(row_bits, io.row_mask);
+                // io.write_masked_bits(row_bits, io.row_mask);
 
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-                // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+                //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-                // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
                 
                 // timer.nanosleep(io.bitplane_timings[b] as u32);
                 // //nanosleep(io.bitplane_timings[b],&timer);

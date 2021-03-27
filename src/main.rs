@@ -631,10 +631,10 @@ pub fn main() {
     if nix::unistd::Uid::current().is_root() == false {
         eprintln!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
         std::process::exit(1);
-    } /* else if args.len() < 2 {
+    } else if args.len() < 2 {
         eprintln!("Syntax: {:?} [image]", args[0]);
-        std::process::exit(1);
-    } */
+        // std::process::exit(1);
+    }
 
     // TODO00000000: Read the PPM file here. You can find its name in args[1]
     let path = Path::new(&args[1]);

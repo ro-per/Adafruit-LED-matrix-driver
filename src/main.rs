@@ -800,6 +800,6 @@ pub fn main() {
     }
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
-    //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+    //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 }

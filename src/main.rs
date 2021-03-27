@@ -55,9 +55,9 @@ struct GPIO {
 
 #[derive(Clone)]
 struct Pixel {
-    r: u16,
-    g: u16,
-    b: u16
+    r: u8,
+    g: u8,
+    b: u8
 }
 
 // This is a representation of the "raw" image
@@ -225,13 +225,21 @@ impl GPIO {
     }
 
     fn set_bits(self: &mut GPIO, value: u32) {
-        // TODO: Implement this yourself. Remember to take the slowdown_ value into account!
-        // This function expects a bitmask as the @value argument
+        unsafe {
+            std::ptr::write_volatile(self.gpio_set_bits_, value);
+            for _iter in 0..self.slowdown_ {
+                std::ptr::write_volatile(self.gpio_set_bits_, value);
+            }
+        }
     }
 
     fn clear_bits(self: &mut GPIO, value: u32) {
-        // TODO: Implement this yourself. Remember to take the slowdown_ value into account!
-        // This function expects a bitmask as the @value argument
+        unsafe {
+            std::ptr::write_volatile(self.gpio_clr_bits_, value);
+            for _iter in 0..self.slowdown_ {
+                std::ptr::write_volatile(self.gpio_clr_bits_, value);
+            }
+        }
     }
 
     // Write all the bits of @value that also appear in @mask. Leave the rest untouched.
@@ -241,7 +249,8 @@ impl GPIO {
         value: u32,
         mask: u32
     ) {
-        // TODO: Implement this yourself.
+        self.clear_bits(!value & mask);
+        self.set_bits(value & mask);
     }
 
     fn new(slowdown: u32) -> GPIO {
@@ -256,7 +265,7 @@ impl GPIO {
             input_bits_: 0,
             slowdown_: slowdown,
             gpio_port_: 0 as *mut u32,
-            gpio_set_bits_: 0 as *mut u32,
+            gpio_set_bits_: 1 as *mut u32,
             gpio_clr_bits_: 0 as *mut u32,
             gpio_read_bits_: 0 as *mut u32,
             row_mask: 0,
@@ -267,13 +276,42 @@ impl GPIO {
             Some(m) => {
                 unsafe {
                     io.gpio_port_ = m.data() as *mut u32;
-                    // TODO: Calculate the correct values of the other raw pointers here.
-                    // You should use the offset() method on the gpio_port_ pointer.
-                    // Keep in mind that Rust raw pointer arithmetic works exactly like
-                    // C pointer arithmetic. See the course slides for details
+
+                    io.gpio_set_bits_ = io.gpio_port_.offset(0x1C / 4); 
+                    io.gpio_clr_bits_ = io.gpio_port_.offset(0x28/ 4); 
+                    io.gpio_read_bits_ = io.gpio_port_.offset(0x34/4);
                 }
 
-                // TODO: Implement this yourself.
+                let mut all_used_bits : gpio_bits_t = 0;
+
+                all_used_bits |= GPIO_BIT!(PIN_OE) | GPIO_BIT!(PIN_CLK) | GPIO_BIT!(PIN_LAT);
+                all_used_bits |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2);
+                
+                io.row_mask = GPIO_BIT!(PIN_A);
+
+                if ROWS / SUB_PANELS_ > 2 {
+                    io.row_mask |= GPIO_BIT!(PIN_B);
+                }
+                if ROWS / SUB_PANELS_ > 4 {
+                    io.row_mask |= GPIO_BIT!(PIN_C);
+                }
+                if ROWS / SUB_PANELS_ > 8 {
+                    io.row_mask |= GPIO_BIT!(PIN_D);
+                }
+                if ROWS / SUB_PANELS_ > 16 {
+                    io.row_mask |= GPIO_BIT!(PIN_E);
+                }
+                
+                all_used_bits |= io.row_mask;
+
+                let result :u32 = io.init_outputs(all_used_bits);
+                assert!(result == all_used_bits);
+
+                let mut timing_ns: u32 = 1000;
+                for b in 0..COLOR_DEPTH{
+                    io.bitplane_timings[b] = timing_ns;
+                    timing_ns *= 2;
+                }
             },
             None => {}
         }
@@ -298,14 +336,31 @@ impl GPIO {
     }
 }
 
-/*impl Timer {
+impl Timer {
     // Reads from the 1Mhz timer register (see Section 2.5 in the assignment)
     unsafe fn read(self: &Timer) -> u32 {
-        // TODO: Implement this yourself.
+        let time:u32 = std::ptr::read_volatile(self.timereg);
+        time
     }
 
     fn new() -> Timer {
-        // TODO: Implement this yourself.
+        let map = mmap_bcm_register(TIMER_REGISTER_OFFSET as usize);
+
+        let mut timer: Timer = Timer {
+            _timemap: None,
+            timereg: 0 as *mut u32,
+        };
+
+        match &map {
+            &Some(ref map) => {
+                unsafe {
+                    timer.timereg = map.data() as *mut u32;
+                    timer.timereg.offset(1);
+                }
+            }
+            &None => {}
+        };
+        timer
     }
 
     // High-precision sleep function (see section 2.5 in the assignment)
@@ -314,16 +369,102 @@ impl GPIO {
     // about how you can approximate the desired precision. Obviously, there is
     // no perfect solution here.
     fn nanosleep(self: &Timer, mut nanos: u32) {
-        // TODO: Implement this yourself.
+        let k_jitter_allowance = 60 * 1000 + 0;
+
+        if nanos > k_jitter_allowance{
+       
+           let before:u32= unsafe {self.read()};
+           let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
+           sleep(sleep_time);
+           let after:u32 = unsafe {self.read()};
+           let time_passed: u64 ;
+
+           if after > before {
+               time_passed = 1000 * (after - before) as u64;
+           }
+           else{
+               time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
+           }
+           if time_passed > nanos as u64 {
+               return
+           }
+           else{
+               nanos -= time_passed as u32;
+           }
+       }
+
+       if nanos < 20 {
+           return;
+       }
+
+       let start_time: u32 = unsafe { self.read() };
+       let mut current_time: u32 = start_time;
+
+       while start_time + (nanos * 1000) <= current_time {
+           current_time = unsafe { self.read() };
+       }
+       return;
     }
 }
 
-// TODO: Implement your frame calculation/updating logic here.
 // The Frame should contain the pixels that are currently shown
 // on the LED board. In most cases, the Frame will have less pixels
 // than the input Image!
 impl Frame {
+    fn new() -> Frame {
+        let frame: Frame = Frame {
+            pos: 0,
+            pixels: vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize],
+        };
 
+        frame
+    }
+
+    fn next_image_frame(&mut self, image: &Image) {
+        
+        let blokgrootte_breedte = image.width/(COLUMNS*3);
+        let blokgrootte_lengte = image.height/ROWS;
+        
+        for row in 0..ROWS {
+            for col in 0..COLUMNS {
+                let image_position = ((self.pos + col*blokgrootte_breedte) as usize % image.width) as usize;
+                
+                //lijntje hier onder is nog 'raw'
+                //self.pixels[row][col] = image.pixels[row][image_position].clone();
+            
+                //raw -> full
+                let raw_color = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
+
+                //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
+                self.pixels[row as usize][col as usize].r = self.raw_color_to_full_color(raw_color.r);
+                self.pixels[row as usize][col as usize].g = self.raw_color_to_full_color(raw_color.g);
+                self.pixels[row as usize][col as usize].b = self.raw_color_to_full_color(raw_color.b);
+            
+            }
+        }
+
+        self.pos = self.pos + 1;
+        if self.pos >= image.width as usize {
+            self.pos = 0;
+        }
+    }
+
+    //voor gamma correction
+    fn raw_color_to_full_color(self: &mut Frame, raw_color: u8) -> u8{
+        //let full_color = ((raw_color as u32)* ((1<<COLOR_DEPTH) -1)/255) as u16;
+        let gammaCorrection : f32 = 1.75;
+        
+        let raw_color_float = raw_color as f32;
+        let max_value_float = 255 as f32;
+        
+        let full_color = (max_value_float * (raw_color as f32 / max_value_float).powf(gammaCorrection)) as u8;
+        
+        full_color
+    }
+
+    fn clear_frame(self:&mut Frame){
+        self.pixels=vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize];
+    }
 }
 
 // TODO: Add your PPM parser here
@@ -332,9 +473,156 @@ impl Frame {
 // You may assume that the max_color value is always 255, but you should add sanity checks
 // to safely reject files with other max_color values
 impl Image {
-
-}*/
-
+    /* fn show_image(image: &Image) {
+        let sdl = sdl2::init().unwrap();
+        let video_subsystem = sdl.video().unwrap();
+        let display_mode = video_subsystem.current_display_mode(0).unwrap();
+    
+        let w = match display_mode.w as u32 > image.width {
+            true => image.width,
+            false => display_mode.w as u32
+        };
+        let h = match display_mode.h as u32 > image.height {
+            true => image.height,
+            false => display_mode.h as u32
+        };
+        
+        let window = video_subsystem
+            .window("Image", w, h)
+            .build()
+            .unwrap();
+        let mut canvas = window
+            .into_canvas()
+            .present_vsync()
+            .build()
+            .unwrap();
+        let black = sdl2::pixels::Color::RGB(0, 0, 0);
+    
+        let mut event_pump = sdl.event_pump().unwrap();
+    
+        // render image
+        canvas.set_draw_color(black);
+        canvas.clear();
+    
+        for r in 0..image.height {
+            for c in 0..image.width {
+                let pixel = &image.pixels[r as usize][c as usize];
+                canvas.set_draw_color(Color::RGB(pixel.r as u8, pixel.g as u8, pixel.b as u8));
+                canvas.fill_rect(Rect::new(c as i32, r as i32, 1, 1)).unwrap();
+            }
+        }
+    
+        canvas.present();
+    
+        'main: loop {        
+            for event in event_pump.poll_iter() {
+                match event {
+                    sdl2::event::Event::Quit {..} => break 'main,
+                    _ => {},
+                }
+            }
+            sleep(Duration::new(0, 250000000));
+        }
+    } */
+    
+    
+    fn decode_ppm_image(cursor: &mut Cursor<Vec<u8>>) -> Result<Image, std::io::Error> {
+        let mut image = Image { 
+            width: 0,
+            height: 0,
+            pixels: vec![]
+        };
+    
+        /* INLEZEN VAN HET TYPE */
+        let mut header: [u8;2]=[0;2]; // inlezen van karakters
+        cursor.read(&mut header)?; // ? geeft error terug mee met result van de functie
+        match &header{ // & dient voor slice van te maken
+            b"P6" => println!("P6 image"),  // b zorgt ervoor dat je byte string hebt (u8 slice)
+            _ => panic!("Not an P6 image")  //_ staat voor default branch
+        }
+    
+        /* INLEZEN VAN BREEDTE EN HOOGTE */
+        image.width=Image::read_number(cursor)?;
+        image.height=Image::read_number(cursor)?;
+        let colourRange = Image::read_number(cursor)?;
+    
+        /* eventuele whitespaces na eerste lijn */
+        Image::consume_whitespaces(cursor)?;
+    
+        /* body inlezen */
+    
+        for _ in 0.. image.height{
+            let mut row = Vec::new();
+            for _ in 0..image.width{
+                let red = cursor.read_u8()?;
+                let green = cursor.read_u8()?;
+                let blue = cursor.read_u8()?;
+                
+                row.push(Pixel{r:red,g:green,b:blue});
+            }
+            image.pixels.push(row);
+        }
+    
+    
+    
+    
+        // TODO: Parse the image here
+    
+        Ok(image)
+    }
+    
+    fn read_number(cursor: &mut Cursor<Vec<u8>>)-> Result<usize,std::io::Error>{
+        Image::consume_whitespaces(cursor)?;
+    
+        let mut buff: [u8;1] = [0];
+        let mut v = Vec::new(); // vector waar je bytes gaat in steken
+    
+        loop{
+            cursor.read(& mut buff)?;
+            match buff[0]{
+                b'0'..= b'9' => v.push(buff[0]),
+                b' ' | b'\n' | b'\r' | b'\t' => break,
+                _ => panic!("Not a valid image")
+            }
+        }
+        // byte vector omzetten
+        let num_str: &str = std::str::from_utf8(&v).unwrap(); // unwrap gaat ok value er uit halen als het ok is, panic als het niet ok is
+        let num =num_str.parse::<usize>().unwrap(); // unwrap dient voor errors
+    
+        // return
+        Ok(num)
+    
+        //return Ok(num); andere mogelijke return
+    }
+    
+    fn consume_whitespaces (cursor: &mut Cursor<Vec<u8>>)-> Result<(),std::io::Error>{ //Result<() : de lege haakjes betekend  niks returnen
+        let mut buff: [u8;1] = [0];
+    
+        loop{
+            cursor.read(& mut buff)?;
+            match buff[0]{
+                b' ' | b'\n' | b'\r' | b'\t' => println!("Whitespace"),
+                _ => { // je zit eigenlijk al te ver nu !!! zet cursor 1 terug
+                    cursor.seek(SeekFrom::Current(-1))?;
+                    break;
+                }
+            }
+        }
+        Ok(()) // () : de lege haakjes betekend  niks returnen
+    
+    }
+}
+impl Pixel {
+	
+	pub fn new() -> Pixel {
+		let pixel: Pixel = Pixel {
+			r:0,
+			g:0,
+			b:0,
+		};
+		pixel
+	}
+}
 pub fn main() {
     let args : Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
@@ -343,13 +631,39 @@ pub fn main() {
     if nix::unistd::Uid::current().is_root() == false {
         eprintln!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
         std::process::exit(1);
-    } else if args.len() < 2 {
+    } /* else if args.len() < 2 {
         eprintln!("Syntax: {:?} [image]", args[0]);
         std::process::exit(1);
-    }
+    } */
 
-    // TODO: Read the PPM file here. You can find its name in args[1]
-    // TODO: Initialize the GPIO struct and the Timer struct
+    // TODO00000000: Read the PPM file here. You can find its name in args[1]
+    let path = Path::new(&args[1]);
+    let display = path.display();
+
+    let mut file = match File::open(&path) {
+        Err(why) => panic!("Could not open file: {} (Reason: {})", 
+            display, why),
+        Ok(file) => file
+    };
+
+    // read the full file into memory. panic on failure
+    let mut raw_file = Vec::new();
+    file.read_to_end(&mut raw_file).unwrap();
+
+    // construct a cursor so we can seek in the raw buffer
+    let mut cursor = Cursor::new(raw_file);
+    let image = match Image::decode_ppm_image(&mut cursor) {
+        Ok(img) => img,
+        Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
+    };
+
+    //Image::show_image(&image);
+
+    
+    // TODO00000000: Initialize the GPIO struct and the Timer struct
+    let mut io = GPIO::new(1);
+    let timer = Timer::new(); //DIT OOK JUIST??
+    let mut frame = Frame::new();
 
     // This code sets up a CTRL-C handler that writes "true" to the 
     // interrupt_received bool.
@@ -369,4 +683,6 @@ pub fn main() {
     }
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
+    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 }

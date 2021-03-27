@@ -728,20 +728,23 @@ pub fn main() {
         const PIN_B2  : u64 = 23;
  */
 
-
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
 
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
 
 
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
 
+        // Strobe in the previously clocked in row.
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_CLK));
-
+        //enable output
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
 
     }
     println!("Exiting.");

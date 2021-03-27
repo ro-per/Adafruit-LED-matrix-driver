@@ -770,9 +770,9 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
         /* ----------- STEP 5. ENABLE OUTPUT ----------- */
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
         //nanosleep(150ns)
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
 
     }
     println!("Exiting.");

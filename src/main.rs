@@ -733,6 +733,8 @@ pub fn main() {
                 // timer.nanosleep(io.bitplane_timings[b] as u32);
                 // //nanosleep(io.bitplane_timings[b],&timer);
                 // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+
+                println!("*********");
             }
         }
     }

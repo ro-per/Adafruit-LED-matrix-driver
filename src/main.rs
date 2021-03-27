@@ -727,7 +727,7 @@ pub fn main() {
         const PIN_G2  : u64 = 16;
         const PIN_B2  : u64 = 23;
  */
-        // GPIO::clear_bits(&mut io, color_clk_mask);
+        GPIO::clear_bits(&mut io, color_clk_mask);
 
         
 

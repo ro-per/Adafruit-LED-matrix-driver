@@ -705,8 +705,6 @@ pub fn main() {
 
 
     while interrupt_received.load(Ordering::SeqCst) == false {
-        //DONE????
-        // TODO: Implement your rendering loop here
 		let mut color_clk_mask : gpio_bits_t = 0;
         
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
@@ -727,47 +725,6 @@ pub fn main() {
         const PIN_G2  : u64 = 16;
         const PIN_B2  : u64 = 23;
  */
-        GPIO::clear_bits(&mut io, color_clk_mask);
-
-        
-
-        // /* ----------- STEP 1. PUSH/CLOCK COLOR DATA (R1,G1,B1, R2,G2,B2) ----------- */
-        // // Rising edge: clock color in.
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
-        // // CLOCK IN (R1,G1,B1, R2,G2,B2)
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G1));
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B1));
-
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R2));
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B2));
-        // // clock back to normal.
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
-
-
-
-        // /* ----------- STEP 2. CLEAR ALL PINS (R1,G1,B1, R2,G2,B2,CLK) ----------- */
-        // //GPIO::clear_bits(&mut io, color_clk_mask);
-
-
-        // /* ----------- STEP 3. PUSH/CLOCK ROW DATA (CBA) ----------- */
-        // //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
-
-
-
-        // /* ----------- STEP 4. STROBE IN PREVIOUSLY CLOCKED ROW ----------- */
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
-        // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
-
-        // /* ----------- STEP 5. ENABLE OUTPUT ----------- */
-        // //nanosleep(150ns)
-        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-        // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-
-
-
-
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
 
@@ -776,7 +733,7 @@ pub fn main() {
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
 
 
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
 
         // Strobe in the previously clocked in row.
@@ -787,10 +744,6 @@ pub fn main() {
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
 
-
-
-
-
     }
     println!("Exiting.");
     if interrupt_received.load(Ordering::SeqCst) == true {
@@ -800,6 +753,6 @@ pub fn main() {
     }
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
-    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-    //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 }

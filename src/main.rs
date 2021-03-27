@@ -673,7 +673,29 @@ pub fn main() {
     }).unwrap();
 
     while interrupt_received.load(Ordering::SeqCst) == false {
+        //DONE????
         // TODO: Implement your rendering loop here
+		let mut color_clk_mask : gpio_bits_t = 0;
+        
+        color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
+        
+        for row_loop in 0..ROWS/2 {
+            for b in 0..COLOR_DEPTH{
+                
+                let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+
+                GPIO::clear_bits(&mut io, color_clk_mask);
+                io.write_masked_bits(row_bits, io.row_mask);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+                
+                timer.nanosleep(io.bitplane_timings[b] as u32);
+                //nanosleep(io.bitplane_timings[b],&timer);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+            }
+        }
     }
     println!("Exiting.");
     if interrupt_received.load(Ordering::SeqCst) == true {

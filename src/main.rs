@@ -636,7 +636,7 @@ pub fn main() {
         // std::process::exit(1);
     }
 
-    // TODO00000000: Read the PPM file here. You can find its name in args[1]
+/*     // TODO00000000: Read the PPM file here. You can find its name in args[1]
     let path = Path::new(&args[1]);
     let display = path.display();
 
@@ -655,7 +655,7 @@ pub fn main() {
     let image = match Image::decode_ppm_image(&mut cursor) {
         Ok(img) => img,
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
-    };
+    }; */
 
     //Image::show_image(&image);
 
@@ -683,6 +683,6 @@ pub fn main() {
     }
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
-    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+    //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
     GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 }

@@ -731,39 +731,65 @@ pub fn main() {
 
         
 
-        /* ----------- STEP 1. PUSH/CLOCK COLOR DATA (R1,G1,B1, R2,G2,B2) ----------- */
-        // Rising edge: clock color in.
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
-        // CLOCK IN (R1,G1,B1, R2,G2,B2)
+        // /* ----------- STEP 1. PUSH/CLOCK COLOR DATA (R1,G1,B1, R2,G2,B2) ----------- */
+        // // Rising edge: clock color in.
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
+        // // CLOCK IN (R1,G1,B1, R2,G2,B2)
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G1));
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B1));
+
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R2));
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B2));
+        // // clock back to normal.
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
+
+
+
+        // /* ----------- STEP 2. CLEAR ALL PINS (R1,G1,B1, R2,G2,B2,CLK) ----------- */
+        // //GPIO::clear_bits(&mut io, color_clk_mask);
+
+
+        // /* ----------- STEP 3. PUSH/CLOCK ROW DATA (CBA) ----------- */
+        // //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
+
+
+
+        // /* ----------- STEP 4. STROBE IN PREVIOUSLY CLOCKED ROW ----------- */
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+        // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+
+        // /* ----------- STEP 5. ENABLE OUTPUT ----------- */
+        // //nanosleep(150ns)
+        // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+        // GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+
+
+
+
+
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+
+
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G1));
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B1));
-
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R2));
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B2));
-        // clock back to normal.
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); 
 
 
-
-        /* ----------- STEP 2. CLEAR ALL PINS (R1,G1,B1, R2,G2,B2,CLK) ----------- */
-        //GPIO::clear_bits(&mut io, color_clk_mask);
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
 
-        /* ----------- STEP 3. PUSH/CLOCK ROW DATA (CBA) ----------- */
-        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
-
-
-
-        /* ----------- STEP 4. STROBE IN PREVIOUSLY CLOCKED ROW ----------- */
+        // Strobe in the previously clocked in row.
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-        /* ----------- STEP 5. ENABLE OUTPUT ----------- */
-        //nanosleep(150ns)
+        //enable output
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+
+
+
+
 
     }
     println!("Exiting.");

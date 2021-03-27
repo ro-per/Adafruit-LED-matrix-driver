@@ -334,6 +334,30 @@ impl GPIO {
         }
         pin
     }
+    fn get_plane_bits(self: &GPIO, top : &Pixel, bot : &Pixel, plane : i8) -> u32 {
+       
+        let mut out: gpio_bits_t = 0;
+        if top.r & (1<<plane) !=0 {
+           out |= GPIO_BIT!(PIN_R1);
+        }
+        if top.g & (1<<plane) !=0 {
+            out |= GPIO_BIT!(PIN_G1);
+        }
+        if top.b & (1<<plane) !=0 {
+            out |= GPIO_BIT!(PIN_B1);
+        }
+        if bot.r & (1<<plane) !=0 {
+            out |= GPIO_BIT!(PIN_R2);
+        }
+        if bot.g & (1<<plane) !=0 {
+            out |= GPIO_BIT!(PIN_G2);
+        }
+        if bot.b & (1<<plane) !=0 {
+            out |= GPIO_BIT!(PIN_B2);
+        }
+
+       out
+    }
 }
 
 impl Timer {
@@ -681,22 +705,31 @@ pub fn main() {
         
         for row_loop in 0..ROWS/2 {
             for b in 0..COLOR_DEPTH{
+                for col in 0..32{
+
+                    let top = &frame.pixels[row_loop][col];
+                    let bot = &frame.pixels[ROWS /2 + row_loop][col];
+                    
+                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &top, &bot, b as i8);
+                    
+
+                    GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
+                    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
+
+                }
                 
                 let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
 
-                //GPIO::clear_bits(&mut io, color_clk_mask);
-
+                GPIO::clear_bits(&mut io, color_clk_mask);
                 io.write_masked_bits(row_bits, io.row_mask);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-                GPIO::set_bits(&mut io, color_clk_mask);
-
-                //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
-
-                //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
                 
-                //timer.nanosleep(io.bitplane_timings[b] as u32);
-
-                //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+                timer.nanosleep(io.bitplane_timings[b] as u32);
+                //nanosleep(io.bitplane_timings[b],&timer);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
             }
         }
     }

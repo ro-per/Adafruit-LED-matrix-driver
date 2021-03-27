@@ -730,6 +730,7 @@ pub fn main() {
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
 
+        GPIO::clear_bits(&mut io, color_clk_mask);
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G1));

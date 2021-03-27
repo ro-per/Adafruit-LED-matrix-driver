@@ -752,7 +752,7 @@ pub fn main() {
 
 
         /* ----------- STEP 3. PUSH/CLOCK ROW DATA (CBA) ----------- */
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
+        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
 
 
 

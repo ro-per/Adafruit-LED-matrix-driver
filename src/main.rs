@@ -15,7 +15,8 @@ pub use byteorder::ReadBytesExt;
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
 use shuteye::sleep;
-use std::time::Duration;
+use std::time::{Duration,SystemTime};
+use std::{thread};
 
 /* -------------------------------------------- LAB 4 IMPORTS --------------------------------------------*/
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -363,11 +364,16 @@ impl GPIO {
 impl Timer {
     // Reads from the 1Mhz timer register (see Section 2.5 in the assignment)
     unsafe fn read(self: &Timer) -> u32 {
-        let time:u32 = std::ptr::read_volatile(self.timereg);
-        time
+        //DONE???
+        // TODO: Implement this yourself.
+        let tijd:u32 = std::ptr::read_volatile(self.timereg);
+        tijd
     }
 
     fn new() -> Timer {
+        //DONE???
+        // TODO: Implement this yourself.
+
         let map = mmap_bcm_register(TIMER_REGISTER_OFFSET as usize);
 
         let mut timer: Timer = Timer {
@@ -393,44 +399,46 @@ impl Timer {
     // about how you can approximate the desired precision. Obviously, there is
     // no perfect solution here.
     fn nanosleep(self: &Timer, mut nanos: u32) {
+        //DONE???
+        // TODO: Implement this yourself.
+
         let k_jitter_allowance = 60 * 1000 + 0;
 
-        if nanos > k_jitter_allowance{
-       
-           let before:u32= unsafe {self.read()};
-           let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
-           sleep(sleep_time);
-           let after:u32 = unsafe {self.read()};
-           let time_passed: u64 ;
+		 if nanos > k_jitter_allowance{
+		
+            let before:u32= unsafe {self.read()};
+            let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
+            sleep(sleep_time);
+            let after:u32 = unsafe {self.read()};
+            let time_passed: u64 ;
 
-           if after > before {
-               time_passed = 1000 * (after - before) as u64;
-           }
-           else{
-               time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
-           }
-           if time_passed > nanos as u64 {
-               return
-           }
-           else{
-               nanos -= time_passed as u32;
-           }
-       }
+            if after > before {
+                time_passed = 1000 * (after - before) as u64;
+            }
+            else{
+                time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
+            }
+            if time_passed > nanos as u64 {
+                return
+            }
+            else{
+                nanos -= time_passed as u32;
+            }
+        }
 
-       if nanos < 20 {
-           return;
-       }
+        if nanos < 20 {
+            return;
+        }
 
-       let start_time: u32 = unsafe { self.read() };
-       let mut current_time: u32 = start_time;
+        let start_time: u32 = unsafe { self.read() };
+        let mut current_time: u32 = start_time;
 
-       while start_time + (nanos * 1000) <= current_time {
-           current_time = unsafe { self.read() };
-       }
-       return;
+        while start_time + (nanos * 1000) <= current_time {
+            current_time = unsafe { self.read() };
+        }
+        return;
     }
 }
-
 // The Frame should contain the pixels that are currently shown
 // on the LED board. In most cases, the Frame will have less pixels
 // than the input Image!
@@ -444,20 +452,16 @@ impl Frame {
         frame
     }
 
-    fn next_image_frame(&mut self, image: &Image) {
-        
-        let blokgrootte_breedte = image.width/(COLUMNS*3);
-        let blokgrootte_lengte = image.height/ROWS;
-        
+    fn next_image_frame(&mut self) {
         for row in 0..ROWS {
             for col in 0..COLUMNS {
-                let image_position = ((self.pos + col*blokgrootte_breedte) as usize % image.width) as usize;
+                let image_position = (self.pos) as usize;
                 
                 //lijntje hier onder is nog 'raw'
                 //self.pixels[row][col] = image.pixels[row][image_position].clone();
             
                 //raw -> full
-                let raw_color = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
+                let raw_color = Pixel::new();
 
                 //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
                 self.pixels[row as usize][col as usize].r = self.raw_color_to_full_color(raw_color.r);
@@ -467,10 +471,6 @@ impl Frame {
             }
         }
 
-        self.pos = self.pos + 1;
-        if self.pos >= image.width as usize {
-            self.pos = 0;
-        }
     }
 
     //voor gamma correction
@@ -647,6 +647,13 @@ impl Pixel {
 		pixel
 	}
 }
+
+
+
+
+
+
+
 pub fn main() {
     let args : Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
@@ -696,6 +703,7 @@ pub fn main() {
         int_recv.store(true, Ordering::SeqCst);
     }).unwrap();
 
+
     while interrupt_received.load(Ordering::SeqCst) == false {
         //DONE????
         // TODO: Implement your rendering loop here
@@ -718,22 +726,29 @@ pub fn main() {
 
                 }
                 
-                // let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+                let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
 
-                // GPIO::clear_bits(&mut io, color_clk_mask);
-
-                // io.write_masked_bits(row_bits, io.row_mask);
-
+                GPIO::clear_bits(&mut io, color_clk_mask);
+                io.write_masked_bits(row_bits, io.row_mask);
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
-
-                //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
                 GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
                 
-                // timer.nanosleep(io.bitplane_timings[b] as u32);
-                // //nanosleep(io.bitplane_timings[b],&timer);
-                // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+                timer.nanosleep(io.bitplane_timings[b] as u32);
+                //nanosleep(io.bitplane_timings[b],&timer);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 
+
+
+
+
+                let ten_millis = std::time::Duration::from_millis(1);
+                let now = time::Instant::now();
+
+                thread::sleep(ten_millis);
+
+                assert!(now.elapsed() >= ten_millis);
                 println!("*********");
             }
         }

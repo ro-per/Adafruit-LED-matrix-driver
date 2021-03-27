@@ -732,7 +732,7 @@ pub fn main() {
 
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G1));
 
 
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.

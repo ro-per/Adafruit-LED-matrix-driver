@@ -776,7 +776,7 @@ pub fn main() {
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
 
 
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
 
         // Strobe in the previously clocked in row.

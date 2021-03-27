@@ -266,7 +266,7 @@ impl GPIO {
             input_bits_: 0,
             slowdown_: slowdown,
             gpio_port_: 0 as *mut u32,
-            gpio_set_bits_: 1 as *mut u32,
+            gpio_set_bits_: 0 as *mut u32,
             gpio_clr_bits_: 0 as *mut u32,
             gpio_read_bits_: 0 as *mut u32,
             row_mask: 0,
@@ -710,49 +710,39 @@ pub fn main() {
 		let mut color_clk_mask : gpio_bits_t = 0;
         
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
-        
-        for row_loop in 0..ROWS/2 {
-            for b in 0..COLOR_DEPTH{
-                for col in 0..32{
 
-                    let top = &frame.pixels[row_loop][col];
-                    let bot = &frame.pixels[ROWS /2 + row_loop][col];
 
-                    
-                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &top, &bot, b as i8);
-                    
+        /* const PIN_OE  : u64 = 4;
+        const PIN_CLK : u64 = 17;
+        const PIN_LAT : u64 = 21;
+        const PIN_A   : u64 = 22;
+        const PIN_B   : u64 = 26;
+        const PIN_C   : u64 = 27;
+        const PIN_D   : u64 = 20;
+        const PIN_E   : u64 = 24;
+        const PIN_R1  : u64 = 5;
+        const PIN_G1  : u64 = 13;
+        const PIN_B1  : u64 = 6;
+        const PIN_R2  : u64 = 12;
+        const PIN_G2  : u64 = 16;
+        const PIN_B2  : u64 = 23;
+ */
 
-                    GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
-                    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
-                }
-                
-                let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
-                GPIO::clear_bits(&mut io, color_clk_mask);
-                io.write_masked_bits(row_bits, io.row_mask);
-                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
-                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 
-                GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-                
-                timer.nanosleep(io.bitplane_timings[b] as u32);
-                //nanosleep(io.bitplane_timings[b],&timer);
-                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_G2));
 
 
 
 
 
-                let ten_millis = std::time::Duration::from_millis(1);
-                let now = time::Instant::now();
 
-                thread::sleep(ten_millis);
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
-                assert!(now.elapsed() >= ten_millis);
-                println!("*********");
-            }
-        }
+
     }
     println!("Exiting.");
     if interrupt_received.load(Ordering::SeqCst) == true {

@@ -718,7 +718,6 @@ pub fn main() {
                     let top = &frame.pixels[row_loop][col];
                     let bot = &frame.pixels[ROWS /2 + row_loop][col];
 
-                    println!(top);
                     
                     let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &top, &bot, b as i8);
                     

@@ -782,6 +782,12 @@ pub fn main() {
             // Strobe in the previously clocked in row.
             GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_B));
+            
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+            GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
         //}
 
         /* STEP 6. ENABLE OUTPUT PINS */

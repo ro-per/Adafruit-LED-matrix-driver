@@ -700,8 +700,8 @@ pub fn main() {
     }).unwrap();
 
 
-    //while interrupt_received.load(Ordering::SeqCst) == false {
-    for x in 0.. 1{    
+    while interrupt_received.load(Ordering::SeqCst) == false {
+    //for x in 0.. 1{    
        
 
         /* const PIN_OE  : u64 = 4;
@@ -740,12 +740,12 @@ pub fn main() {
         // CLEAR ALL BITS
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
-        for x in 0.. 7{ // [0,7[
+        //for x in 0.. 7{ // [0,7[
             /* STEP 2. LOOP EACH COLUMN */
             //TODO CLEAR ROW PINS
             print!("ROW {} \t",x);
 
-            for y in 0.. 32{
+            //for y in 0.. 32{
                 //TODO CLEAR COLOR PINS
                 print!("COL {}",y);
 
@@ -760,7 +760,7 @@ pub fn main() {
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
-            }
+            //}
             println!("\n");
 
             GPIO::write_masked_bits(&mut io, row_mask, color_clk_mask);
@@ -778,7 +778,7 @@ pub fn main() {
             // Strobe in the previously clocked in row.
             GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
-        }
+        //}
 
         /* STEP 6. ENABLE OUTPUT PINS */
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE)); // CLEAR = ENABLE FOR OE

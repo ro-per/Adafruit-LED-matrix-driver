@@ -723,10 +723,13 @@ pub fn main() {
         let mut color_clk_mask : gpio_bits_t = 0;
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
 
+        let mut color_sub0_mask : gpio_bits_t = 0;
+        let mut color_sub1_mask : gpio_bits_t = 0;
         color_sub0_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_CLK);
         color_sub1_mask |= GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
 
-        row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_BC) | GPIO_BIT!(PIN_CLK);
+        let mut row_mask : gpio_bits_t = 0;
+        row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
 
 
         GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
@@ -762,7 +765,7 @@ pub fn main() {
 
             GPIO::write_masked_bits(&mut io, row_mask, color_clk_mask);
 
-            if x % 2 =0 {
+            if x % 2 == 0 {
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
             }  else {
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_C));

@@ -17,6 +17,7 @@ pub use byteorder::ReadBytesExt;
 use shuteye::sleep;
 use std::time::{Duration,SystemTime};
 use std::{thread};
+use std::{thread, time};
 
 /* -------------------------------------------- LAB 4 IMPORTS --------------------------------------------*/
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -784,9 +785,14 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE)); // CLEAR = ENABLE FOR OE
         //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 
-        while(true){
-            println!("print");
-        }
+
+        let ten_millis = time::Duration::from_millis(1000);
+        let now = time::Instant::now();
+
+        thread::sleep(ten_millis);
+
+        assert!(now.elapsed() >= ten_millis);
+
 
     }
     println!("Exiting.");

@@ -785,7 +785,7 @@ pub fn main() {
         //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 
 
-        thread::sleep(time::Duration::from_secs(1));
+        thread::sleep(time::Duration::from_std(1));
 
 
     }

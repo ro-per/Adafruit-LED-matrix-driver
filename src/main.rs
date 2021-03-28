@@ -784,7 +784,7 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE)); // CLEAR = ENABLE FOR OE
         //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 
-        nanosleep(1000);
+        Timer::nanosleep(1000);
 
 
     }

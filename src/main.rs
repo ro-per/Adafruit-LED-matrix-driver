@@ -700,8 +700,8 @@ pub fn main() {
     }).unwrap();
 
 
-    while interrupt_received.load(Ordering::SeqCst) == false {
-        
+    //while interrupt_received.load(Ordering::SeqCst) == false {
+    for x in 0.. 1{    
        
 
         /* const PIN_OE  : u64 = 4;

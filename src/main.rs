@@ -723,9 +723,14 @@ pub fn main() {
         let mut color_clk_mask : gpio_bits_t = 0;
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
 
+        color_sub0_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_CLK);
+        color_sub1_mask |= GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
 
-        //GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
-        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
+        row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_BC) | GPIO_BIT!(PIN_CLK);
+
+
+        GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
 
 
@@ -735,7 +740,7 @@ pub fn main() {
         for x in 0.. 7{ // [0,7[
             /* STEP 2. LOOP EACH COLUMN */
             //TODO CLEAR ROW PINS
-            print!("ROW {}",x);
+            print!("ROW {} \t",x);
 
             for y in 0.. 32{
                 //TODO CLEAR COLOR PINS
@@ -754,6 +759,17 @@ pub fn main() {
 
             }
             println!("\n");
+
+            GPIO::write_masked_bits(&mut io, row_mask, color_clk_mask);
+
+            if x % 2 =0 {
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
+            }  else {
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_C));
+            }
+
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
 
             /* STEP 5. SIGNAL MATRIX THAT DATA FOR A DOUBLE ROW HAS ARRIVED */
             // Strobe in the previously clocked in row.

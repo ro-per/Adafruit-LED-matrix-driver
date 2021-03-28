@@ -743,11 +743,11 @@ pub fn main() {
         //for x in 0.. 7{ // [0,7[
             /* STEP 2. LOOP EACH COLUMN */
             //TODO CLEAR ROW PINS
-            print!("ROW {} \t",x);
+            //print!("ROW {} \t",x);
 
             //for y in 0.. 32{
                 //TODO CLEAR COLOR PINS
-                print!("COL {}",y);
+                //print!("COL {}",y);
 
                 /* STEP 3. PUSH COLORS */
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_R1));

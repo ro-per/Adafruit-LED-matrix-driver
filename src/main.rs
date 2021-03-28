@@ -394,7 +394,7 @@ impl Timer {
     // you cannot reach full nanosecond precision here. You will have to think
     // about how you can approximate the desired precision. Obviously, there is
     // no perfect solution here.
-    fn nanosleep(/* self: &Timer, */ mut nanos: u32) {
+    fn nanosleep( self: &Timer,  mut nanos: u32) {
         //DONE???
         // TODO: Implement this yourself.
 
@@ -783,9 +783,6 @@ pub fn main() {
         /* STEP 6. ENABLE OUTPUT PINS */
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE)); // CLEAR = ENABLE FOR OE
         //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-
-        Timer::nanosleep(1000);
-
 
     }
     println!("Exiting.");

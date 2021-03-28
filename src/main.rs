@@ -735,9 +735,15 @@ pub fn main() {
         GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
-
-
         // CLEAR ALL BITS
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_R1));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_G1));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B1));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_R2));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_G2));
+        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B2));
+
+        
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         //for x in 0.. 7{ // [0,7[

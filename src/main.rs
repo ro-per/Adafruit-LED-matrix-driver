@@ -784,8 +784,7 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE)); // CLEAR = ENABLE FOR OE
         //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 
-
-        thread::sleep(time::Duration::from_std(1));
+        nanosleep(1000);
 
 
     }
@@ -798,5 +797,21 @@ pub fn main() {
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
     //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+    //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    oe_enable();
+}
+
+fn latch_in(){
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
+    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
+}
+fn clock_in(){
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
+}
+fn oe_enable(){
     GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+}
+fn oe_disable(){
+    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
 }

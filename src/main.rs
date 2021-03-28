@@ -797,11 +797,10 @@ pub fn main() {
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
     //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-    //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-    oe_enable(self: &mut GPIO);
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
 }
 
-fn latch_in(self: &mut GPIO){
+/* fn latch_in(self: &mut GPIO){
     GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
     GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
 }
@@ -814,4 +813,4 @@ fn oe_enable(self: &mut GPIO){
 }
 fn oe_disable(self: &mut GPIO){
     GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-}
+} */

@@ -732,8 +732,8 @@ pub fn main() {
         row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
 
 
-        //GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
-        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
+        GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
+        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
 
 
 

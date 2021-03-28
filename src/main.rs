@@ -765,11 +765,9 @@ pub fn main() {
 
             GPIO::write_masked_bits(&mut io, row_mask, color_clk_mask);
 
-            if x % 2 == 0 {
-                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
-            }  else {
-                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_C));
-            }
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_A));
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_C));
+            
 
             GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
             GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.

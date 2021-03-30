@@ -1,0 +1,43 @@
+Keyboard layout
+setxkbmap -layout <country_code>
+
+
+LAB 1
+1. Install VirtualBox
+2. Download latest Kali 64-bit VM
+https://www.offensive-security.com/kali-linux-vm-vmware-virtualbox-imagedownload/
+3. Username & password: kali  (US keyboard --> kqli)
+4. Setup VM
+	I. 		sudo apt-get update
+	II. 	sudo apt-get upgrade (takes some time!)
+	III. 	sudo apt-get install gdb clang
+5. Install VS Code
+	a. 		sudo dpkg -i <file>.deb
+	(b. 		sudo apt install <file>.deb)
+	
+LAB 2
+sudo su -
+		apt update
+		apt install gcc-multilib
+		apt install python3-pip
+		echo 0 > /proc/sys/kernel/randomize_va_space
+exit
+
+pip3 install pwntools
+git clone https://github.com/stijn-volckaert/MemoryExploits.git
+cd MemoryExploits
+cp .gdbinit ../
+make
+
+LAB 3
+1. Enter in terminal
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt-get install cmake libsdl2-dev
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	. ~/.profile
+2. Test installation
+	- download sdl2_test.zip from toledo
+	- cd sdltest
+	-cargo run -> a new window opens with a red 800x800px square
+	

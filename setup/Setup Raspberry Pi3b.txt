@@ -1,0 +1,47 @@
+0.
+	sudo apt update
+	sudo apt upgrade
+	
+1. Remote acces Pi
+	sudo apt install xrdp
+	sudo systemctl enable ssh
+	ifconfig
+	
+2. Setup git
+		sudo apt install git
+		
+		git config --global user.name "ro-per"
+		git config --global user.email "romeo.permentier@gmail.com"
+		git config --global core.editor nano
+		
+		git config --global credential.helper store // STORES PASSWORD !!!
+		
+		(git pull)
+		
+		git clone https://github.com/ro-per/VS-Lab3_test.git
+
+
+	
+3. test led matrix 
+
+	curl -O https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/rgb-matrix.sh
+	
+	sudo bash rgb-matrix.sh
+	
+	cd ~/rpi-rgb-led-matrix/examples-api-use
+	
+	sudo ./demo -D0 --led-rows=32 --led-cols=16
+
+4. Install rust
+	curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	
+5. install vs code
+	sudo apt install code
+	
+6. Lab 4
+	git clone https://github.com/ro-per/VS-Lab4-LED_Matrix_Driver_in_Rust.git
+	
+	cargo build
+	
+	sudo ./target/debug/<name>.exe <args>
+	

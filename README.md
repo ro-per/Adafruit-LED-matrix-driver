@@ -1,7 +1,18 @@
 # Adafruit LED matrix driver in rust
-## I. Tasks
+```Image``` -> ```Vec<Frame> ``` --> ```RGB Matrix```
+# Table of contents
+I. [Tasks](#tasks)
+    I.A [Funtionality](#subparagraph1)
+    I.B [Funtionality](#subparagraph1)
+    I.C [Funtionality](#subparagraph1)
+II. [Authors](#paragraph1)
+III.[Links](#paragraph2)
+
+* Table of contents
+{:toc}
+
+## I. Tasks <a name="tasks"></a>
 ### I.A Funtionality
-* ```Image``` -> ```Vec<Frame> ``` --> ```RGB Matrix```
 * *CTRL+C* Interrupt handling
 
 ### I.B Structs
@@ -49,9 +60,9 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 
 
 ## III. Links
-- [Rust bindings for C++ Library](https://github.com/rust-rpi-led-matrix/rust-rpi-rgb-led-matrix)
-- [C++ Library](https://github.com/hzeller/rpi-rgb-led-matrix)
-- [Backup project](https://github.com/ro-per/VS-LED_Matrix_Driver_Backup/blob/master/src/main.rs)
+- [Rust bindings for C++ Library](https://github.com/rust-rpi-led-matrix/rust-rpi-rgb-led-matrix) (see below)
+- [C++ Library](https://github.com/hzeller/rpi-rgb-led-matrix) for driving RGB-Matrix
+- [Backup project](https://github.com/ro-per/VS-LED_Matrix_Driver_Backup/blob/master/src/main.rs) of last year
 - [Lab 1: Debugging C and CPP with GDB](https://github.com/ro-per/VS-Lab1_Debugging_C_CPP_with_GDB)
 - [Lab 2: Memory Exploits in C](https://github.com/ro-per/VS-Lab2_Memory_Exploits_in_C)
 - [Lab 3: IO and parsing in Rust](https://github.com/ro-per/VS-Lab3_IO_and_Parsing_in_Rust/blob/main/src/main.rs)

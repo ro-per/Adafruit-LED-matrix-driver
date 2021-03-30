@@ -33,13 +33,13 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 #### I.B.4 **Pixel:** 
 *Holds single RGB value*
     * atrr= {r: u16 | g: u16 | b: u16}
-- [ ]R  ```fn to_grey_scale();```
-- [ ]R  ```fn color_invert();```
+- [ ] R  ```fn to_grey_scale();```
+- [ ] R  ```fn color_invert();```
    
 #### I.B.5 **GPIO**
-- [ ]R  ```fn clockPulse(); ```
-- [ ]R  ```fn latchPulse(); ```
-- [ ]R  ``` fn oeEnabled(boolean b);```
+- [ ] R  ```fn clockPulse(); ```
+- [ ] R  ```fn latchPulse(); ```
+- [ ] R  ``` fn oeEnabled(boolean b);```
 
 
 ### I.C Effects                             <a name="IC"></a>
@@ -50,7 +50,7 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ]  --ScrollDir=
     * L(eft)
     * R(ight)
-- [ ]R  --Image=<filename>.ppm (lab 3)
+- [ ] R  --Image=<filename>.ppm (lab 3)
 
 ## II. Authors                              <a name="II"></a>
 - @NickBraeckman

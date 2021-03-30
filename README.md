@@ -8,6 +8,8 @@ I.C [Effects](#IC)
 2. [Authors](#II)
 3. [Links](#III)
 
+![Adafruit Medium 16x32 RGB LED matrix panel](https://cdn.shopify.com/s/files/1/1749/9663/products/420-07_800x.jpg?v=1500650577 "Adafruit Medium 16x32 RGB LED matrix panel")
+
 ## I. Tasks <a name="I"></a>
 ### I.A Funtionality                        <a name="IA"></a>
 * *CTRL+C* Interrupt handling

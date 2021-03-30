@@ -43,15 +43,15 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 
 
 ### 1.C Effects                             <a name="IC"></a>
-- [ ] --Fade: Show static Frame that fades in and out (use PulsWidthModulation)
-- [ ]  --ScrollMode=
+- [ ] --F(ade): Show static Frame that fades in and out (use PulsWidthModulation)
+- [ ] --S(croll)M(ode)=
     * A(uto)   : Scrolling automatically
     * M(ouse)  :Scroll with mouse
-- [ ]  --ScrollDir=
+- [ ] --S(croll)D(ir)=
     * L(eft)
     * R(ight)
 - [ ] R  --Image=<filename>.ppm (lab 3)
-- [ ] --Text=<filename>.txt
+- [ ] --T(ext)=<filename>.txt
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

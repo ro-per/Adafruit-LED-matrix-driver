@@ -1,41 +1,38 @@
 # Adafruit LED matrix driver in rust
-## Tasks
-### Funtionality
-.PNG -> BPM -> Rescale to ??*16 
-* Frame to Display
-    * Functions (Clock in, Latch in, RGB1 RGB2, ...)
-    * Uses Timer
-* * 
+## I. Tasks
+### I.A Funtionality
+* ```Image``` -> ```Vec<Frame> ``` --> ```RGB Matrix```
 * *CTRL+C* Interrupt handling
 
-### Structs
-* **Image:** *This is a representation of the "raw" image*
-    * atrr= {width | height | pixels: Vec<Vec<Pixel>>}
-    - [ ]  ```fn rescaleTo_32_16();```
-   - [ ]  ```fn rescaleTo_xx_16();```
-   - [ ]  ```fn ppm_image_parser();``` (lab 2)
+### I.B Structs
+#### I.B.1 **Image:** 
+*This is a representation of the "raw" image*  
+atrr= {width | height | pixels: Vec<Vec<Pixel>>}
+- [ ]  ```fn rescaleTo_32_16();```
+- [ ]  ```fn rescaleTo_xx_16();```
+- [ ]R  ```fn ppm_image_parser();``` (lab 2)
+- [ ]  ```fn mirror();```
     
+#### I.B.2 **Frame:**  
+*This is a representation of the frame we're currently rendering*  
+?????
     
-* **Frame:**  *This is a representation of the frame we're currently rendering*
-class that holds 3 Matrices (or a 3D Matrix)  
-    * (x,y) = (32,16)   : correspond to LED's on panel
-    * (z)   = (3)       :contains Pixels
-    
-    
-* **Timer:** used to timeout funtions
+#### I.B.3 **Timer:**
+- [ ] ```fn nanosleep(self: &Timer, mut nanos: u32)```
 
-
-* **Pixel:** *Holds single RGB value*
+#### I.B.4 **Pixel:** 
+*Holds single RGB value*
     * atrr= {r: u16 | g: u16 | b: u16}
-    
-    
-* **GPIO**
+- [ ]R  ```fn to_grey_scale();```
+- [ ]R  ```fn color_invert();```
+   
+#### I.B.5 **GPIO**
 - [ ]R  ```fn clockPulse(); ```
 - [ ]R  ```fn latchPulse(); ```
 - [ ]R  ``` fn oeEnabled(boolean b);```
 
 
-### Effects
+### I.C Effects
 - [ ] --Fade: Show static Frame that fades in and out (use PulsWidthModulation)
 - [ ]  --ScrollMode=
     * A(uto)   : Scrolling automatically
@@ -45,7 +42,13 @@ class that holds 3 Matrices (or a 3D Matrix)
     * R(ight)
 - [ ]R  --Image=<filename>.ppm (lab 3)
 
-## Links
+## II. Authors
+- @NickBraeckman
+- @Cedric-Lefevre
+- @ro-per
+
+
+## III. Links
 - [Rust bindings for C++ Library](https://github.com/rust-rpi-led-matrix/rust-rpi-rgb-led-matrix)
 - [C++ Library](https://github.com/hzeller/rpi-rgb-led-matrix)
 - [Backup project](https://github.com/ro-per/VS-LED_Matrix_Driver_Backup/blob/master/src/main.rs)

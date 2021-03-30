@@ -20,7 +20,7 @@ I.C [Effects](#IC)
 atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ]  ```fn rescaleTo_32_16();```
 - [ ]  ```fn rescaleTo_xx_16();```
-- [ ]R  ```fn ppm_image_parser();``` (lab 2)
+- [ ] R  ```fn ppm_image_parser();``` (lab 2)
 - [ ]  ```fn mirror();```
     
 #### I.B.2 **Frame:**  

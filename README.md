@@ -51,6 +51,7 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
     * L(eft)
     * R(ight)
 - [ ] R  --Image=<filename>.ppm (lab 3)
+- [ ] --Text=<filename>.txt
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

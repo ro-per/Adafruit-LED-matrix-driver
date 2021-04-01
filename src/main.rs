@@ -544,7 +544,9 @@ impl Image {
             sleep(Duration::new(0, 250000000));
         }
     } */
-    
+    fn fit_image(){
+        
+    }
     
     fn decode_ppm_image(cursor: &mut Cursor<Vec<u8>>) -> Result<Image, std::io::Error> {
         let mut image = Image { 

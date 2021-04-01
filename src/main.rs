@@ -318,7 +318,7 @@ impl GPIO {
     }
 
     // Calculates the pins we must activate to push the address of the specified double_row
-    fn get_row_pin(self: &GPIO, double_row: u8) -> u32 {
+    fn get_row_bits(self: &GPIO, double_row: u8) -> u32 {
         let mut pin : u32 = 0;
         if double_row & 0x01 != 0 {
             pin |= GPIO_BIT!(PIN_A);
@@ -749,42 +749,42 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_G2));
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B2));
 
-        
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
+        for row_loop in 0..ROWS/2 {
+            /* STEP 2. LOOP COLOR DEPTH */ /*  DO NOT ASK ME WHY ... IT JUST WORKS... hehe XP */
+            for b in 0..COLOR_DEPTH{
+                let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
+                };
+                let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
+                };
+                let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, b as i8);
 
-        /* STEP 2. LOOP EACH COLUMN */
-        for b in 0..COLOR_DEPTH{
-            let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
-            };
-            let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
-            };
-            let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, b as i8);
-    
-            for col in 0.. 32{
-                /* STEP 3. PUSH COLORS */
-                GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
-                /* STEP 4. SIGNAL MATRIX THAT DATA FOR A SINGLE COLUMN HAS ARRIVED */
-                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+                /* STEP 3. LOOP EACH COLUMN */
+                for col in 0.. 32{
+                    /* STEP 4. PUSH COLORS */
+                    GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
+                    /* STEP 5. SIGNAL MATRIX THAT DATA FOR A SINGLE COLUMN HAS ARRIVED */
+                    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+                }
+            GPIO::clear_bits(&mut io, color_clk_mask); // clock back to normal.
+            
+            /* STEP 6. SIGNAL MATRIX THAT DATA FOR A DOUBLE ROW HAS ARRIVED */
+            let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+            io.write_masked_bits(row_bits,io.row_mask);
+            GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT)); //disable
+            GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT)); //enable
+
+
+            /* STEP 7. ENABLE OUTPUT PINS */
+            GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+
+            /* STEP 8. TIMEOUT */
+            //TODO
+
+            /* STEP 9. DISABLE OUTPUT PINS */
+            //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+
             }
-        
-        GPIO::clear_bits(&mut io, color_clk_mask); // clock back to normal.
-
-         
-        /* STEP 5. SIGNAL MATRIX THAT DATA FOR A DOUBLE ROW HAS ARRIVED */
-        io.write_masked_bits(row_mask,io.row_mask);
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT)); //disable
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT)); //enable
-
-
-        /* STEP 6. ENABLE OUTPUT PINS */
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-
-        /* STEP 7. TIMEOUT */
-        //TODO
-
-        /* STEP 8. DISABLE OUTPUT PINS */
-        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-
         }
     }
     println!("Exiting.");

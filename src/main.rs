@@ -663,7 +663,11 @@ pub fn main() {
         // std::process::exit(1);
     }
 
-/*     // TODO00000000: Read the PPM file here. You can find its name in args[1]
+
+// ============================================================================
+// PPM PARSER (paht in args[1])
+// ============================================================================
+
     let path = Path::new(&args[1]);
     let display = path.display();
 
@@ -682,14 +686,15 @@ pub fn main() {
     let image = match Image::decode_ppm_image(&mut cursor) {
         Ok(img) => img,
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
-    }; */
+    };
 
-    //Image::show_image(&image);
+    //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
-    
-    // TODO00000000: Initialize the GPIO struct and the Timer struct
+// ============================================================================
+// TODO00000000: Initialize the GPIO struct and the Timer struct
+// ============================================================================
     let mut io = GPIO::new(1);
-    let timer = Timer::new(); //DIT OOK JUIST??
+    let timer = Timer::new();
     let mut frame = Frame::new();
 
     // This code sets up a CTRL-C handler that writes "true" to the 
@@ -700,6 +705,9 @@ pub fn main() {
     }).unwrap();
 
 
+// ============================================================================
+// RENDERING PIXELS ON THE MATRIX
+// ============================================================================
     while interrupt_received.load(Ordering::SeqCst) == false {
     //for x in 0.. 1{    
         /* const PIN_OE  : u64 = 4;
@@ -742,8 +750,9 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B2));
 
         
+        /* STEP 1. LOOP EACH (DOUBLE) ROW */
 
-        // FIRST LOOP ALL COLLS
+        /* STEP 2. LOOP EACH COLUMN */
         for b in 0..COLOR_DEPTH{
             let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
             };
@@ -752,22 +761,30 @@ pub fn main() {
             let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, b as i8);
     
             for col in 0.. 32{
+                /* STEP 3. PUSH COLORS */
                 GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
+                /* STEP 4. SIGNAL MATRIX THAT DATA FOR A SINGLE COLUMN HAS ARRIVED */
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
             }
         
         GPIO::clear_bits(&mut io, color_clk_mask); // clock back to normal.
 
-        //SECOND LOOP ROWS
+         
+        /* STEP 5. SIGNAL MATRIX THAT DATA FOR A DOUBLE ROW HAS ARRIVED */
         io.write_masked_bits(row_mask,io.row_mask);
         GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT)); //disable
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT)); //enable
 
 
-        // THIRD ENABLE OUTPUT
+        /* STEP 6. ENABLE OUTPUT PINS */
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
 
-        
+        /* STEP 7. TIMEOUT */
+        //TODO
+
+        /* STEP 8. DISABLE OUTPUT PINS */
+        //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+
         }
     }
     println!("Exiting.");

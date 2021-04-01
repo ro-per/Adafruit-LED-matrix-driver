@@ -549,6 +549,8 @@ impl Image {
     }
     
     fn decode_ppm_image(cursor: &mut Cursor<Vec<u8>>) -> Result<Image, std::io::Error> {
+        let parent_method = "Image/decode_ppm_image:";
+        println!("{} Decoding ppm image ...",parent_method);
         let mut image = Image { 
             width: 0,
             height: 0,
@@ -559,8 +561,8 @@ impl Image {
         let mut header: [u8;2]=[0;2]; // inlezen van karakters
         cursor.read(&mut header)?; // ? geeft error terug mee met result van de functie
         match &header{ // & dient voor slice van te maken
-            b"P6" => println!("P6 image"),  // b zorgt ervoor dat je byte string hebt (u8 slice)
-            _ => panic!("Not an P6 image")  //_ staat voor default branch
+            b"P6" => println!("\t P6 image"),  // b zorgt ervoor dat je byte string hebt (u8 slice)
+            _ => panic!("\t Not an P6 image")  //_ staat voor default branch
         }
     
         /* INLEZEN VAN BREEDTE EN HOOGTE */
@@ -589,13 +591,15 @@ impl Image {
     
     
         // TODO: Parse the image here
+        println!("{} Decoding done !",parent_method);
     
         Ok(image)
     }
     
     fn read_number(cursor: &mut Cursor<Vec<u8>>)-> Result<usize,std::io::Error>{
+        let parent_method = "Image/read_number:";
         Image::consume_whitespaces(cursor)?;
-    
+
         let mut buff: [u8;1] = [0];
         let mut v = Vec::new(); // vector waar je bytes gaat in steken
     
@@ -604,7 +608,7 @@ impl Image {
             match buff[0]{
                 b'0'..= b'9' => v.push(buff[0]),
                 b' ' | b'\n' | b'\r' | b'\t' => break,
-                _ => panic!("Not a valid image")
+                _ => panic!("{} Not a valid image",parent_method)
             }
         }
         // byte vector omzetten
@@ -623,7 +627,7 @@ impl Image {
         loop{
             cursor.read(& mut buff)?;
             match buff[0]{
-                b' ' | b'\n' | b'\r' | b'\t' => println!("Whitespace"),
+                b' ' | b'\n' | b'\r' | b'\t' => println!("\t consumed 1 whitespace"),
                 _ => { // je zit eigenlijk al te ver nu !!! zet cursor 1 terug
                     cursor.seek(SeekFrom::Current(-1))?;
                     break;
@@ -690,6 +694,8 @@ pub fn main() {
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
     };
 
+    //image.fit_image();
+
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
 // ============================================================================
@@ -710,6 +716,9 @@ pub fn main() {
 // ============================================================================
 // RENDERING PIXELS ON THE MATRIX
 // ============================================================================
+    let parent_method = "main:";
+    println!("{} Showing on matrix ...",parent_method);
+
     while interrupt_received.load(Ordering::SeqCst) == false {
     //for x in 0.. 1{    
         /* const PIN_OE  : u64 = 4;
@@ -752,17 +761,25 @@ pub fn main() {
         GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B2));
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
-        for row_loop in 0..ROWS/2 {
+        for row in 0..ROWS/2 {
             /* STEP 2. LOOP COLOR DEPTH */ /*  DO NOT ASK ME WHY ... IT JUST WORKS... hehe XP */
-            for b in 0..COLOR_DEPTH{
+            for cd in 0..COLOR_DEPTH{
                 let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
                 };
                 let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
                 };
-                let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, b as i8);
 
+                
                 /* STEP 3. LOOP EACH COLUMN */
                 for col in 0.. 32{
+
+                    // let pixel_top = &image.pixels[row][col];
+                    // let pixel_bot = &image.pixels[ROWS /2 + row][col];
+                    
+    
+                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
+    
+
                     /* STEP 4. PUSH COLORS */
                     GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
                     /* STEP 5. SIGNAL MATRIX THAT DATA FOR A SINGLE COLUMN HAS ARRIVED */
@@ -771,7 +788,7 @@ pub fn main() {
             GPIO::clear_bits(&mut io, color_clk_mask); // clock back to normal.
             
             /* STEP 6. SIGNAL MATRIX THAT DATA FOR A DOUBLE ROW HAS ARRIVED */
-            let row_bits : u32 = GPIO::get_row_bits(&mut io, row_loop as u8);
+            let row_bits : u32 = GPIO::get_row_bits(&mut io, row as u8);
             io.write_masked_bits(row_bits,io.row_mask);
             GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT)); //disable
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT)); //enable
@@ -779,26 +796,25 @@ pub fn main() {
 
             /* STEP 7. ENABLE OUTPUT PINS */
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-
-            /* STEP 8. TIMEOUT */
-            //TODO
-
-            /* STEP 9. DISABLE OUTPUT PINS */
-            //GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-
             }
         }
     }
-    println!("Exiting.");
     if interrupt_received.load(Ordering::SeqCst) == true {
-        println!("Received CTRL-C");
+        println!("\n{} Received CTRL-C",parent_method);
     } else {
-        println!("Timeout reached");
+        println!("{} Timeout reached",parent_method);
     }
+    println!("Exiting...");
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
-    //GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    //let second = 1000 as u32;
+
+    /* STEP 8. TIMEOUT */
+    //TODO
+    // timer.nanosleep(second/2 as u32);
+    /* STEP 9. DISABLE OUTPUT PINS */
+    // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    // timer.nanosleep(second/2 as u32);
 }
 
 /* fn latch_in(self: &mut GPIO){

@@ -6,6 +6,8 @@ extern crate ctrlc;
 extern crate shuteye;
 extern crate mmap;
 extern crate nix;
+/* -------------------------------------------- OWN CRATES --------------------------------------------*/
+extern crate rand;
 
 /* -------------------------------------------- LAB 3 IMPORTS --------------------------------------------*/
 use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
@@ -25,6 +27,10 @@ use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use std::os::unix::io::AsRawFd;
 use std::io::prelude::*;
 use mmap::{MemoryMap, MapOption};
+
+/* -------------------------------------------- OWN IMPORTS --------------------------------------------*/
+use rand::thread_rng;
+use rand::Rng;
 
 /* -------------------------------------------- LAB 3 STRUCTS --------------------------------------------*/
 /* #[derive(Clone)]
@@ -719,6 +725,10 @@ pub fn main() {
     let parent_method = "main:";
     println!("{} Showing on matrix ...",parent_method);
 
+
+
+
+
     while interrupt_received.load(Ordering::SeqCst) == false {
     //for x in 0.. 1{    
         /* const PIN_OE  : u64 = 4;
@@ -764,15 +774,26 @@ pub fn main() {
         for row in 0..ROWS/2 {
             /* STEP 2. LOOP COLOR DEPTH */ /*  DO NOT ASK ME WHY ... IT JUST WORKS... hehe XP */
             for cd in 0..COLOR_DEPTH{
-                let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
-                };
-                let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
-                };
+                let r1: u8 = rand::thread_rng().gen_range(0..=255);
+                    // let g1: u8 = rand::thread_rng().gen_range(0..=255);
+                    // let b1: u8 = rand::thread_rng().gen_range(0..=255);
+                    // let r2: u8 = rand::thread_rng().gen_range(0..=255);
+                    // let g2: u8 = rand::thread_rng().gen_range(0..=255);
+                    // let b2: u8 = rand::thread_rng().gen_range(0..=255);
+                    
+                    let pixel_top = Pixel{r: (100 as u8), g:(100 as u8), b: (100 as u8)
+                    };
+                    let pixel_bot = Pixel{r: (150 as u8), g:(100 as u8), b: (50 as u8)
+                    };
+
+                
+                
+                
 
                 
                 /* STEP 3. LOOP EACH COLUMN */
                 for col in 0.. 32{
-
+                    
                     // let pixel_top = &image.pixels[row][col];
                     // let pixel_bot = &image.pixels[ROWS /2 + row][col];
                     
@@ -798,6 +819,8 @@ pub fn main() {
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
             }
         }
+        // let second = 1000000000;
+        // sleep(Duration::new(0,second/2));
     }
     if interrupt_received.load(Ordering::SeqCst) == true {
         println!("\n{} Received CTRL-C",parent_method);

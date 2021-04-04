@@ -781,9 +781,9 @@ pub fn main() {
                     // let g2: u8 = rand::thread_rng().gen_range(0..=255);
                     // let b2: u8 = rand::thread_rng().gen_range(0..=255);
                     
-                    let pixel_top = Pixel{r: (100 as u8), g:(100 as u8), b: (100 as u8)
+                    let pixel_top = Pixel{r: (100 as u8), g:(0 as u8), b: (0 as u8)
                     };
-                    let pixel_bot = Pixel{r: (150 as u8), g:(100 as u8), b: (50 as u8)
+                    let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (100 as u8)
                     };
 
                 

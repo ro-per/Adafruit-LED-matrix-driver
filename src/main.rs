@@ -268,10 +268,12 @@ impl GPIO {
             input_bits_: 0,
             slowdown_: slowdown,
             gpio_port_: 0 as *mut u32,
+            // ALLES HIERONDER ZAL NOG GEINITIALISEERD MOETEN WORDEN
             gpio_set_bits_: 0 as *mut u32,
             gpio_clr_bits_: 0 as *mut u32,
             gpio_read_bits_: 0 as *mut u32,
             row_mask: 0,
+            // DIT ZAL JE NODIG HEBBEN IN HET PROJECT, MAAR NIET IN LABO 4
             bitplane_timings: [0; COLOR_DEPTH]
         };
 
@@ -772,32 +774,19 @@ pub fn main() {
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         for row in 0..ROWS/2 {
-            /* STEP 2. LOOP COLOR DEPTH */ /*  DO NOT ASK ME WHY ... IT JUST WORKS... hehe XP */
-            for cd in 0..COLOR_DEPTH{
-                let r1: u8 = rand::thread_rng().gen_range(0..=255);
-                    // let g1: u8 = rand::thread_rng().gen_range(0..=255);
-                    // let b1: u8 = rand::thread_rng().gen_range(0..=255);
-                    // let r2: u8 = rand::thread_rng().gen_range(0..=255);
-                    // let g2: u8 = rand::thread_rng().gen_range(0..=255);
-                    // let b2: u8 = rand::thread_rng().gen_range(0..=255);
+            /* STEP 2. LOOP COLOR DEPTH */ /*  8 Colors that can be mixed with each other */
+            for cd in 0..COLOR_DEPTH{                
+                /* STEP 3. LOOP EACH COLUMN */
+                for col in 0.. COLUMNS{
+                    
+                    // let pixel_top = &image.pixels[row][col];
+                    // let pixel_bot = &image.pixels[ROWS /2 + row][col];
                     
                     let pixel_top = Pixel{r: (100 as u8), g:(0 as u8), b: (0 as u8)
                     };
                     let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (100 as u8)
                     };
 
-                
-                
-                
-
-                
-                /* STEP 3. LOOP EACH COLUMN */
-                for col in 0.. 32{
-                    
-                    // let pixel_top = &image.pixels[row][col];
-                    // let pixel_bot = &image.pixels[ROWS /2 + row][col];
-                    
-    
                     let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
     
 

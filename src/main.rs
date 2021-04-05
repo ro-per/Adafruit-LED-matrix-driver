@@ -32,20 +32,6 @@ use mmap::{MemoryMap, MapOption};
 use rand::thread_rng;
 use rand::Rng;
 
-/* -------------------------------------------- LAB 3 STRUCTS --------------------------------------------*/
-/* #[derive(Clone)]
-struct Pixel {
-    r: u8,
-    g: u8,
-    b: u8
-}
-
-struct Image {
-    width: u32,
-    height: u32,
-    pixels: Vec<Vec<Pixel>>
-} */
-
 /* -------------------------------------------- LAB 4 STRUCTS --------------------------------------------*/
 struct GPIO {
     gpio_map_: Option<MemoryMap>,
@@ -69,8 +55,8 @@ struct Pixel {
 
 // This is a representation of the "raw" image
 struct Image {
-    width: usize,
-    height: usize,
+    width: usize,   // 32
+    height: usize, //16
     pixels: Vec<Vec<Pixel>>
 }
 
@@ -555,7 +541,8 @@ impl Image {
     fn fit_image(){
         
     }
-    
+
+  
     fn decode_ppm_image(cursor: &mut Cursor<Vec<u8>>) -> Result<Image, std::io::Error> {
         let parent_method = "Image/decode_ppm_image:";
         println!("{} Decoding ppm image ...",parent_method);
@@ -659,9 +646,9 @@ impl Pixel {
 }
 
 
-
-
-
+// ============================================================================
+// MAIN FUNCTION
+// ============================================================================
 
 
 pub fn main() {
@@ -702,8 +689,6 @@ pub fn main() {
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
     };
 
-    //image.fit_image();
-
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
 // ============================================================================
@@ -727,67 +712,30 @@ pub fn main() {
     let parent_method = "main:";
     println!("{} Showing on matrix ...",parent_method);
 
-
-
-
-
     while interrupt_received.load(Ordering::SeqCst) == false {
-    //for x in 0.. 1{    
-        /* const PIN_OE  : u64 = 4;
-        const PIN_CLK : u64 = 17;
-        const PIN_LAT : u64 = 21;
-        const PIN_A   : u64 = 22;
-        const PIN_B   : u64 = 26;
-        const PIN_C   : u64 = 27;
-        const PIN_D   : u64 = 20;
-        const PIN_E   : u64 = 24;
-        const PIN_R1  : u64 = 5;
-        const PIN_G1  : u64 = 13;
-        const PIN_B1  : u64 = 6;
-        const PIN_R2  : u64 = 12;
-        const PIN_G2  : u64 = 16;
-        const PIN_B2  : u64 = 23;
- */
 
-        let mut color_clk_mask : gpio_bits_t = 0; // Mask of bits while clocking in.
+        let mut color_clk_mask : gpio_bits_t = 0;
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
-
-        let mut color_sub0_mask : gpio_bits_t = 0;
-        let mut color_sub1_mask : gpio_bits_t = 0;
-        color_sub0_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_CLK);
-        color_sub1_mask |= GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
-
         let mut row_mask : gpio_bits_t = 0;
         row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
 
 
-        GPIO::write_masked_bits(&mut io, color_clk_mask, color_clk_mask);
-        GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK));
-
-        // CLEAR ALL BITS
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_R1));
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_G1));
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B1));
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_R2));
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_G2));
-        GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_B2));
-
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         for row in 0..ROWS/2 {
-            /* STEP 2. LOOP COLOR DEPTH */ /*  8 Colors that can be mixed with each other */
-            //for cd in 0..COLOR_DEPTH{                
+            /* STEP 2. LOOP COLOR DEPTH */                      /*  8 Colors that can be mixed with each other */
+            for cd in 0..COLOR_DEPTH{                
                 /* STEP 3. LOOP EACH COLUMN */
                 for col in 0.. COLUMNS{
                     
-                    // let pixel_top = &image.pixels[row][col];
-                    // let pixel_bot = &image.pixels[ROWS /2 + row][col];
+                    let pixel_top = &image.pixels[row][col];
+                    let pixel_bot = &image.pixels[ROWS /2 + row][col];
                     
-                    let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
-                    };
-                    let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
-                    };
+                    // let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
+                    // };
+                    // let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
+                    // };
 
-                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, 1 as i8); // HARD CODED
+                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
     
 
                     /* STEP 4. PUSH COLORS */
@@ -806,7 +754,7 @@ pub fn main() {
 
             /* STEP 7. ENABLE OUTPUT PINS */
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-            //}
+            }
         }
     }
     if interrupt_received.load(Ordering::SeqCst) == true {
@@ -817,27 +765,12 @@ pub fn main() {
     println!("Exiting...");
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
-    //let second = 1000 as u32;
+   
 
     /* STEP 8. TIMEOUT */
-    //TODO
-    // timer.nanosleep(second/2 as u32);
+    // timer.nanosleep(...);
+
     /* STEP 9. DISABLE OUTPUT PINS */
     // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-    // timer.nanosleep(second/2 as u32);
+    // timer.nanosleep(...);
 }
-
-/* fn latch_in(self: &mut GPIO){
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT));
-    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT));
-}
-fn clock_in(self: &mut GPIO){
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // clock back to normal.
-}
-fn oe_enable(self: &mut GPIO){
-    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
-}
-fn oe_disable(self: &mut GPIO){
-    GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-} */

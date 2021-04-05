@@ -20,7 +20,7 @@
 atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ]  ```fn rescaleTo_32_16();```
 - [ ]  ```fn rescaleTo_xx_16();```
-- [ ] R  ```fn ppm_image_parser();``` (lab 2)
+- [x]  ```fn ppm_image_parser();``` (lab 2)
 - [ ]  ```fn mirror();```
     
 #### 1.B.II **Frame:**  
@@ -35,12 +35,6 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
     * atrr= {r: u16 | g: u16 | b: u16}
 - [ ] R  ```fn to_grey_scale();```
 - [ ] R  ```fn color_invert();```
-   
-#### 1.B.V **GPIO**
-- [ ] R  ```fn clockPulse(); ```
-- [ ] R  ```fn latchPulse(); ```
-- [ ] R  ``` fn oeEnabled(boolean b);```
-
 
 ### 1.C Effects                             <a name="IC"></a>
 - [ ] --F(ade): Show static Frame that fades in and out (use PulsWidthModulation)
@@ -50,8 +44,9 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ] --S(croll)D(ir)=
     * L(eft)
     * R(ight)
-- [ ] R  --Image=<filename>.ppm (lab 3)
-- [ ] --T(ext)=<filename>.txt
+- [x] --Image=<filename>.ppm (lab 3)
+- [ ] --T(ext)=<filename>.txt (+ News API ?)
+- [ ] Separate bottom/ upper
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

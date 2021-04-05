@@ -775,19 +775,19 @@ pub fn main() {
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         for row in 0..ROWS/2 {
             /* STEP 2. LOOP COLOR DEPTH */ /*  8 Colors that can be mixed with each other */
-            for cd in 0..COLOR_DEPTH{                
+            //for cd in 0..COLOR_DEPTH{                
                 /* STEP 3. LOOP EACH COLUMN */
                 for col in 0.. COLUMNS{
                     
                     // let pixel_top = &image.pixels[row][col];
                     // let pixel_bot = &image.pixels[ROWS /2 + row][col];
                     
-                    let pixel_top = Pixel{r: (100 as u8), g:(0 as u8), b: (0 as u8)
+                    let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
                     };
-                    let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (100 as u8)
+                    let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
                     };
 
-                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
+                    let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, 1 as i8); // HARD CODED
     
 
                     /* STEP 4. PUSH COLORS */
@@ -806,10 +806,8 @@ pub fn main() {
 
             /* STEP 7. ENABLE OUTPUT PINS */
             GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
-            }
+            //}
         }
-        // let second = 1000000000;
-        // sleep(Duration::new(0,second/2));
     }
     if interrupt_received.load(Ordering::SeqCst) == true {
         println!("\n{} Received CTRL-C",parent_method);

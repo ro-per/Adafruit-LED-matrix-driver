@@ -21,7 +21,6 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ]  ```fn rescaleTo_32_16();```
 - [ ]  ```fn rescaleTo_xx_16();```
 - [x]  ```fn ppm_image_parser();``` (lab 2)
-- [ ]  ```fn mirror();```
     
 #### 1.B.II **Frame:**  
 *This is a representation of the frame we're currently rendering*  
@@ -38,11 +37,13 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ] --S(croll)D(ir)=
     * L(eft)
     * R(ight)
-- [x] ```--Image=<filename>.ppm``` (lab 3)
 - [ ] --T(ext)=<filename>.txt (+ News API ?)
 - [ ] Separate bottom/ upper
+- [x] ```--Image=<filename>.ppm``` (lab 3)
 - [x] ```--colors=grey```
 - [x] ```--colors=invert```
+- [x] ```--mirror=vertical```
+- [x] ```--mirror=horizontal```
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

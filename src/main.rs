@@ -18,8 +18,8 @@ extern crate shuteye;
 extern crate mmap;
 extern crate nix;
 extern crate rand;
-// ==================================== USE =======================================
 
+// ==================================== USE =======================================
 use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
 use std::path::Path;
 use std::fs::File;
@@ -33,6 +33,7 @@ use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use std::os::unix::io::AsRawFd;
 use std::io::prelude::*;
 use mmap::{MemoryMap, MapOption};
+
 // ==================================== CONST =======================================
 const BCM2709_PERI_BASE: u64 = 0x3F000000;
 const GPIO_REGISTER_OFFSET: u64 = 0x200000;
@@ -55,18 +56,14 @@ const PIN_R2  : u64 = 12;
 const PIN_G2  : u64 = 16;
 const PIN_B2  : u64 = 23;
 
-
-
-    // own consts
 const SUB_PANELS_: usize = 2;
 const TIMER_OVERFLOW: u32 =4294967295;
 const COLUMNS: usize = 32;
 const ROWS: usize = 16;
 
-
 type gpio_bits_t = u32;
 
-// [DUPLICATE IN util/gpio.rs]        Use this bitmask for sanity checks // Convenience macro for creating bitmasks. See comment above "impl GPIO" below
+// MACRO FOR CREATING BITMASKS
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit
@@ -74,25 +71,13 @@ macro_rules! GPIO_BIT {
 }
 
 
-
-
-
-
-
-
-
-
-
-// ============================================================================
-// MAIN FUNCTION
-// ============================================================================
-
+// ==================================== MAIN =======================================
 
 pub fn main() {
     let args : Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
 
-    // sanity checks
+    // ------------------------------------ SANITY CHECKS ------------------------------------
     if nix::unistd::Uid::current().is_root() == false {
         eprintln!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
         std::process::exit(1);
@@ -101,11 +86,7 @@ pub fn main() {
         // std::process::exit(1);
     }
 
-
-// ============================================================================
-// PPM PARSER (paht in args[1])
-// ============================================================================
-
+    // ------------------------------------ PPM PARSER (paht in args[1]) ------------------------------------
     let path = Path::new(&args[1]);
     let display = path.display();
 
@@ -128,32 +109,29 @@ pub fn main() {
 
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
-
+    // ------------------------------------ INIT GPIO ------------------------------------
     let mut io = GPIO::new(1);
+
+    // ------------------------------------ INIT TIMER ------------------------------------
     let _timer = Timer::new();
+
+    // ------------------------------------ INIT FRAME ------------------------------------
     let _frame = Frame::new();
 
-    // This code sets up a CTRL-C handler that writes "true" to the 
-    // interrupt_received bool.
+    // ------------------------------------ CTRL+C HANDLER ------------------------------------
     let int_recv = interrupt_received.clone();
-    ctrlc::set_handler(move || {
-        int_recv.store(true, Ordering::SeqCst);
-    }).unwrap();
+    ctrlc::set_handler(move || {int_recv.store(true, Ordering::SeqCst);}).unwrap();
 
-
-// ============================================================================
-// RENDERING PIXELS ON THE MATRIX
-// ============================================================================
+    // ------------------------------------ PIXEL RENDERING ------------------------------------
     let parent_method = "main:";
     println!("{} Showing on matrix ...",parent_method);
 
     while interrupt_received.load(Ordering::SeqCst) == false {
-
         let mut color_clk_mask : gpio_bits_t = 0;
         color_clk_mask |= GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1) | GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2) | GPIO_BIT!(PIN_CLK);
+        
         let mut row_mask : gpio_bits_t = 0;
         row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
-
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         for row in 0..ROWS/2 {
@@ -164,19 +142,15 @@ pub fn main() {
                     
                     let pixel_top = &image.pixels[row][col];
                     let pixel_bot = &image.pixels[ROWS /2 + row][col];
-                    
-                    // let pixel_top = Pixel{r: (255 as u8), g:(0 as u8), b: (0 as u8)
-                    // };
-                    // let pixel_bot = Pixel{r: (0 as u8), g:(0 as u8), b: (255 as u8)
-                    // };
 
                     let plane_bits : u32 = GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
     
-
                     /* STEP 4. PUSH COLORS */
                     GPIO::write_masked_bits(&mut io, plane_bits, color_clk_mask);
+
                     /* STEP 5. SIGNAL MATRIX THAT DATA FOR A SINGLE COLUMN HAS ARRIVED */
                     GPIO::set_bits(&mut io, GPIO_BIT!(PIN_CLK)); // Rising edge: clock color in.
+
                 }
             GPIO::clear_bits(&mut io, color_clk_mask); // clock back to normal.
             
@@ -192,21 +166,18 @@ pub fn main() {
             }
         }
     }
+    // ------------------------------------ INTERRUPT HANDLER ------------------------------------
     if interrupt_received.load(Ordering::SeqCst) == true {
         println!("\n{} Received CTRL-C",parent_method);
     } else {
         println!("{} Timeout reached",parent_method);
     }
-    println!("Exiting...");
+    println!("Exiting...");   
 
-
-    // TODO: You may want to reset the board here (i.e., disable all LEDs)
-   
-
-    /* STEP 8. TIMEOUT */
+    // ------------------------------------ TIMEOUT ------------------------------------
     // timer.nanosleep(...);
 
-    /* STEP 9. DISABLE OUTPUT PINS */
+    // ------------------------------------ DISABLE OUTPUT PINS ------------------------------------
     // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
     // timer.nanosleep(...);
 }

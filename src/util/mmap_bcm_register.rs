@@ -1,12 +1,13 @@
-
-// ============================================================================
-// mmap_bcm_register - convenience function used to map the GPIO register block
-// ============================================================================
+// ==================================== PROJECT IMPORTS =======================================
 use crate::{BCM2709_PERI_BASE,REGISTER_BLOCK_SIZE};
+// ==================================== EXTERN IMPORTS =======================================
 use mmap::{MemoryMap, MapOption};
 use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use std::os::unix::io::AsRawFd;
 
+// ============================================================================
+// mmap_bcm_register - convenience function used to map the GPIO register block
+// ============================================================================
 pub fn mmap_bcm_register(register_offset: usize) -> Option<MemoryMap> {
 
     let mem_file =
@@ -38,6 +39,5 @@ pub fn mmap_bcm_register(register_offset: usize) -> Option<MemoryMap> {
         false => Some(result)
     };
 
-    // NOTE/WARNING: When a MemoryMap struct is dropped, the mapped 
-    // memory region is automatically unmapped!
+    // NOTE/WARNING: When a MemoryMap struct is dropped, the mapped memory region is automatically unmapped!
 }

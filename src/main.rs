@@ -1,3 +1,9 @@
+// ============================================================================
+// IMPORTING STRUCTS FOR MODULARITY
+// ============================================================================
+mod pixel;
+use pixel::Pixel;
+
 /* -------------------------------------------- LAB 4 CRATES --------------------------------------------*/
 extern crate libc;
 extern crate time;
@@ -26,7 +32,10 @@ use std::sync::Arc;
 use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use std::os::unix::io::AsRawFd;
 use std::io::prelude::*;
-use mmap::{MemoryMap, MapOption};
+use mmap::{MemoryMap, MapOption};// ============================================================================
+// GPIO configuration parameters for the raspberry pi 3
+// ============================================================================
+
 
 /* -------------------------------------------- OWN IMPORTS --------------------------------------------*/
 use rand::thread_rng;
@@ -46,12 +55,7 @@ struct GPIO {
     bitplane_timings: [u32; COLOR_DEPTH]
 }
 
-#[derive(Clone)]
-struct Pixel {
-    r: u8,
-    g: u8,
-    b: u8
-}
+
 
 // This is a representation of the "raw" image
 struct Image {
@@ -633,17 +637,7 @@ impl Image {
     
     }
 }
-impl Pixel {
-	
-	pub fn new() -> Pixel {
-		let pixel: Pixel = Pixel {
-			r:0,
-			g:0,
-			b:0,
-		};
-		pixel
-	}
-}
+
 
 
 // ============================================================================
@@ -763,6 +757,12 @@ pub fn main() {
         println!("{} Timeout reached",parent_method);
     }
     println!("Exiting...");
+
+
+
+    let mut pix = Test::new();
+    pix.print_message();
+
 
     // TODO: You may want to reset the board here (i.e., disable all LEDs)
    

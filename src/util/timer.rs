@@ -2,7 +2,7 @@
 use crate::{TIMER_REGISTER_OFFSET,TIMER_OVERFLOW};
 use crate::mmap_bcm_register;
 // ==================================== EXTERN IMPORTS =======================================
-use mmap::{MemoryMap, MapOption};
+use mmap::{MemoryMap};
 use shuteye::sleep;
 use std::time::{Duration};
 

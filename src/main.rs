@@ -1,7 +1,7 @@
 // ==================================== PROJECT IMPORTS =======================================
 pub mod util;
 // import structs
-use util::pixel::Pixel;
+
 use util::image::Image;
 use util::frame::Frame;
 use util::timer::Timer;
@@ -23,16 +23,16 @@ extern crate rand;
 use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
 use std::path::Path;
 use std::fs::File;
-use byteorder::ReadBytesExt;
+
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
-use std::time::{Duration};
+
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
-use std::os::unix::io::AsRawFd;
-use std::io::prelude::*;
-use mmap::{MemoryMap, MapOption};
+
+
+
+
 
 // ==================================== CONST =======================================
 const BCM2709_PERI_BASE: u64 = 0x3F000000;

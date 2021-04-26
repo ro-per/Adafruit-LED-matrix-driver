@@ -52,7 +52,7 @@ impl Image {
                 let green = cursor.read_u8()?;
                 let blue = cursor.read_u8()?;
 
-                let mut pixel = Pixel {
+                let pixel = Pixel {
                     r:red,
                     g:green,
                     b:blue,

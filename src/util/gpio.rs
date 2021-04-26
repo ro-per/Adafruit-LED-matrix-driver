@@ -2,7 +2,7 @@
 use super::pixel::Pixel;
 use crate::{*};
 // ==================================== EXTERN IMPORTS =======================================
-use mmap::{MemoryMap, MapOption};
+use mmap::{MemoryMap};
 
 // ============================================================================
 // GPIO configuration parameters for the raspberry pi 3

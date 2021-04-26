@@ -84,7 +84,9 @@ impl Image {
         self.pixels.reverse();
     }
     pub fn mirror_horizontal(&mut self){
-        for _ 
+        for i in 0.. self.height{
+        self.pixels[i].reverse();
+        }
         
     }
     // ==================================== PRIVATE FUNCTIONS =======================================

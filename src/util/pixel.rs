@@ -23,7 +23,33 @@ impl Pixel {
 		pixel
 	}
 	// ==================================== PUBLIC FUNCTIONS =======================================
+	// normal averaging of channels (https://www.kdnuggets.com/2019/12/convert-rgb-image-grayscale.html)
+	pub fn average_channels(pixel: Pixel) -> Pixel{
+		let rf: usize = 2126;
+		let r: usize = pixel.r as usize;
+
+		let gf: usize = 7152;
+		let g: usize = pixel.g as usize;
+
+		let bf: usize = 722;
+		let b: usize = pixel.b as usize;
+
+
+		let temp = (rf*r+gf*g+bf*b)/1000;
+
+
+		let pix: Pixel = Pixel {
+			r:temp as u8,
+			g:temp as u8,
+			b:temp as u8,
+		};
+		pix
+
+
+
+	}
+
 
     // ==================================== PRIVATE FUNCTIONS =======================================
-	
+
 }

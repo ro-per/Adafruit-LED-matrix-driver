@@ -51,8 +51,16 @@ impl Image {
                 let red = cursor.read_u8()?;
                 let green = cursor.read_u8()?;
                 let blue = cursor.read_u8()?;
-                
-                row.push(Pixel{r:red,g:green,b:blue});
+
+                let pixel = Pixel {
+                    r:red,
+                    g:green,
+                    b:blue,
+                };
+
+                //row.push(Pixel::average_channels(pixel));
+                row.push(pixel);
+
             }
             image.pixels.push(row);
         }

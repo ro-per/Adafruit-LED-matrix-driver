@@ -41,12 +41,34 @@ impl Pixel {
 		self.g = 255- self.g;
 		self.b = 255 - self.b;
 	}
-	pub fn toString(&self){
+	pub fn to_string(&self){
 		println!("Pixel: R{} G{} B{}", self.r,self.g,self.b);
 
 	}
 
+	pub fn gamma_correction(&mut self){
+		self.r = Pixel::raw_color_to_full_color(self.r);
+		self.g = Pixel::raw_color_to_full_color(self.g);
+		self.b = Pixel::raw_color_to_full_color(self.b);
 
+		self.to_string();
+
+		
+
+	}
     // ==================================== PRIVATE FUNCTIONS =======================================
+	fn raw_color_to_full_color(raw_color: u8) -> u8{
+        //let full_color = ((raw_color as u32)* ((1<<COLOR_DEPTH) -1)/255) as u16;
+        let gamma_correction : f32 = 1.75;
+        
+        let _raw_color_float = raw_color as f32;
+        let max_value_float = 255 as f32;
+        
+        let full_color = (max_value_float * (raw_color as f32 / max_value_float).powf(gamma_correction)) as u8;
+        
+        full_color
+    }
+
+
 
 }

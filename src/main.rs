@@ -114,6 +114,8 @@ pub fn main() {
             "--colors=invert" => image.invert_colors(),
             "--mirror=vertical" => image.mirror_vertical(),
             "--mirror=horizontal" => image.mirror_horizontal(),
+            "--g" => image.gamma_correction(),
+
             _ => ()
         }
     }

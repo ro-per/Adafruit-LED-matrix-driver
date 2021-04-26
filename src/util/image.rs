@@ -38,7 +38,7 @@ impl Image {
         /* INLEZEN VAN BREEDTE EN HOOGTE */
         image.width=Image::read_number(cursor)?;
         image.height=Image::read_number(cursor)?;
-        let _colourRange = Image::read_number(cursor)?;
+        let _colour_range = Image::read_number(cursor)?;
     
         /* eventuele whitespaces na eerste lijn */
         Image::consume_whitespaces(cursor)?;
@@ -52,7 +52,7 @@ impl Image {
                 let green = cursor.read_u8()?;
                 let blue = cursor.read_u8()?;
 
-                let pixel = Pixel {
+                let mut pixel = Pixel {
                     r:red,
                     g:green,
                     b:blue,
@@ -88,6 +88,13 @@ impl Image {
         self.pixels[i].reverse();
         }
         
+    }
+    pub fn gamma_correction(&mut self){
+        for row in 0.. self.height{
+            for col in 0..self.width{
+                self.pixels[row][col].gamma_correction();
+            }
+        }
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>)-> Result<usize,std::io::Error>{

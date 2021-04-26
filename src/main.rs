@@ -84,6 +84,8 @@ pub fn main() {
         // std::process::exit(1);
     }
 
+ 
+
     // ------------------------------------ PPM PARSER (paht in args[1]) ------------------------------------
     let path = Path::new(&args[1]);
     let display = path.display();
@@ -100,10 +102,21 @@ pub fn main() {
 
     // construct a cursor so we can seek in the raw buffer
     let mut cursor = Cursor::new(raw_file);
-    let image = match Image::decode_ppm_image(&mut cursor) {
+    let mut image = match Image::decode_ppm_image(&mut cursor) {
         Ok(img) => img,
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
     };
+
+    // ------------------------------------ CHECK FOR FEATURES ------------------------------------
+    if args.len() > 2 {
+        if args[2] == "--colors=grey"{
+            image.to_grey_scale();
+        }else if args[2] == "--colors=invert"{
+            image.invert_colors();
+        }else{
+            eprintln!("no options given");
+        }
+    }
 
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 

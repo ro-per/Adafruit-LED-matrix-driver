@@ -30,12 +30,6 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 #### 1.B.III **Timer:**
 - [ ] ```fn nanosleep(self: &Timer, mut nanos: u32)```
 
-#### 1.B.IV **Pixel:** 
-*Holds single RGB value*
-    * atrr= {r: u16 | g: u16 | b: u16}
-- [ ] R  ```fn to_grey_scale();```
-- [ ] R  ```fn color_invert();```
-
 ### 1.C Effects                             <a name="IC"></a>
 - [ ] --F(ade): Show static Frame that fades in and out (use PulsWidthModulation)
 - [ ] --S(croll)M(ode)=
@@ -44,9 +38,11 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ] --S(croll)D(ir)=
     * L(eft)
     * R(ight)
-- [x] --Image=<filename>.ppm (lab 3)
+- [x] ```--Image=<filename>.ppm``` (lab 3)
 - [ ] --T(ext)=<filename>.txt (+ News API ?)
 - [ ] Separate bottom/ upper
+- [x] ```--colors=grey```
+- [x] ```--colors=invert```
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

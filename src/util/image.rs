@@ -52,15 +52,12 @@ impl Image {
                 let green = cursor.read_u8()?;
                 let blue = cursor.read_u8()?;
 
-                let pixel = Pixel {
+                let mut pixel = Pixel {
                     r:red,
                     g:green,
                     b:blue,
                 };
-
-                //row.push(Pixel::average_channels(pixel));
                 row.push(pixel);
-
             }
             image.pixels.push(row);
         }
@@ -68,6 +65,20 @@ impl Image {
         println!("{} Decoding done !",parent_method);
     
         Ok(image)
+    }
+    pub fn to_grey_scale(&mut self){
+        for row in 0.. self.height{
+            for col in 0..self.width{
+                self.pixels[row][col].to_grey_scale();
+            }
+        }
+    }
+    pub fn invert_colors(&mut self){
+        for row in 0.. self.height{
+            for col in 0..self.width{
+                self.pixels[row][col].invert_colors();
+            }
+        }
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>)-> Result<usize,std::io::Error>{

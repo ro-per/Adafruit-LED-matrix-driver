@@ -50,11 +50,6 @@ impl Pixel {
 		self.r = Pixel::raw_color_to_full_color(self.r);
 		self.g = Pixel::raw_color_to_full_color(self.g);
 		self.b = Pixel::raw_color_to_full_color(self.b);
-
-		self.to_string();
-
-		
-
 	}
     // ==================================== PRIVATE FUNCTIONS =======================================
 	fn raw_color_to_full_color(raw_color: u8) -> u8{

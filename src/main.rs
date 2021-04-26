@@ -70,9 +70,7 @@ macro_rules! GPIO_BIT {
     };
 }
 
-
 // ==================================== MAIN =======================================
-
 pub fn main() {
     let args : Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));

@@ -1,11 +1,9 @@
-// ============================================================================
-// IMPORTING STRUCTS FOR MODULARITY
-// ============================================================================
+// ==================================== PROJECT IMPORTS =======================================
 pub mod util;
 use util::pixel::Pixel;
 use util::image::Image;
-
-/* -------------------------------------------- LAB 4 CRATES --------------------------------------------*/
+use util::frame::Frame;
+// ==================================== CRATES =======================================
 extern crate libc;
 extern crate time;
 extern crate ctrlc;
@@ -13,69 +11,24 @@ extern crate ctrlc;
 extern crate shuteye;
 extern crate mmap;
 extern crate nix;
-/* -------------------------------------------- OWN CRATES --------------------------------------------*/
 extern crate rand;
+// ==================================== USE =======================================
 
-/* -------------------------------------------- LAB 3 IMPORTS --------------------------------------------*/
 use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
 use std::path::Path;
 use std::fs::File;
-pub use byteorder::ReadBytesExt;
+use byteorder::ReadBytesExt;
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
 use shuteye::sleep;
 use std::time::{Duration};
-
-
-/* -------------------------------------------- LAB 4 IMPORTS --------------------------------------------*/
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::{fs::OpenOptions, os::unix::fs::OpenOptionsExt};
 use std::os::unix::io::AsRawFd;
 use std::io::prelude::*;
-use mmap::{MemoryMap, MapOption};// ============================================================================
-// GPIO configuration parameters for the raspberry pi 3
-// ============================================================================
-
-
-/* -------------------------------------------- OWN IMPORTS --------------------------------------------*/
-
-
-
-/* -------------------------------------------- LAB 4 STRUCTS --------------------------------------------*/
-struct GPIO {
-    gpio_map_: Option<MemoryMap>,
-    output_bits_: u32,
-    input_bits_: u32,
-    slowdown_: u32,                         // Please refer to the GPIO_SetBits and GPIO_ClearBits functions in the reference implementation to see how this is used.
-    gpio_port_: *mut u32,                   // A raw pointer that points to the base of the GPIO register file
-    gpio_set_bits_: *mut u32,               // A raw pointer that points to the pin output register (see section 2.1 in the assignment)
-    gpio_clr_bits_: *mut u32,               // A raw pointer that points to the pin output clear register (see section 2.1)
-    gpio_read_bits_: *mut u32,              // A raw pointer that points to the pin level register (see section 2.1)
-    row_mask: u32,
-    bitplane_timings: [u32; COLOR_DEPTH]
-}
-
-
-
-
-
-// This is a representation of the frame we're currently rendering
-struct Frame {
-    pos: usize,
-    pixels: Vec<Vec<Pixel>>
-}
-
-// Use this struct to implement high-precision nanosleeps
-struct Timer {
-    _timemap: Option<MemoryMap>,
-    timereg: *mut u32 // a raw pointer to the 1Mhz timer register (see section 2.5 in the assignment)
-}
-
-// ============================================================================
-// GPIO configuration parameters for the raspberry pi 3
-// ============================================================================
-
+use mmap::{MemoryMap, MapOption};
+// ==================================== CONST =======================================
 const BCM2709_PERI_BASE: u64 = 0x3F000000;
 const GPIO_REGISTER_OFFSET: u64 = 0x200000;
 const TIMER_REGISTER_OFFSET: u64 = 0x3000;
@@ -97,24 +50,49 @@ const PIN_R2  : u64 = 12;
 const PIN_G2  : u64 = 16;
 const PIN_B2  : u64 = 23;
 
-// Convenience macro for creating bitmasks. See comment above "impl GPIO" below
+// Use this bitmask for sanity checks // Convenience macro for creating bitmasks. See comment above "impl GPIO" below
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit
     };
 }
-
-// Use this bitmask for sanity checks
 const VALID_BITS: u64 = GPIO_BIT!(PIN_OE) | GPIO_BIT!(PIN_CLK) | GPIO_BIT!(PIN_LAT) |
     GPIO_BIT!(PIN_A)  | GPIO_BIT!(PIN_B)  | GPIO_BIT!(PIN_C)   | GPIO_BIT!(PIN_D)   | GPIO_BIT!(PIN_E) |
     GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1)  |
     GPIO_BIT!(PIN_R2) | GPIO_BIT!(PIN_G2) | GPIO_BIT!(PIN_B2);
 
-//************************************ADDED SELF ************************************
-const ROWS: usize = 16;
+    // own consts
 const SUB_PANELS_: usize = 2;
-const COLUMNS: usize = 32;
 const TIMER_OVERFLOW: u32 =4294967295;
+const COLUMNS: usize = 32;
+const ROWS: usize = 16;
+
+
+
+struct GPIO {
+    gpio_map_: Option<MemoryMap>,
+    output_bits_: u32,
+    input_bits_: u32,
+    slowdown_: u32,                         // Please refer to the GPIO_SetBits and GPIO_ClearBits functions in the reference implementation to see how this is used.
+    gpio_port_: *mut u32,                   // A raw pointer that points to the base of the GPIO register file
+    gpio_set_bits_: *mut u32,               // A raw pointer that points to the pin output register (see section 2.1 in the assignment)
+    gpio_clr_bits_: *mut u32,               // A raw pointer that points to the pin output clear register (see section 2.1)
+    gpio_read_bits_: *mut u32,              // A raw pointer that points to the pin level register (see section 2.1)
+    row_mask: u32,
+    bitplane_timings: [u32; COLOR_DEPTH]
+}
+
+
+
+
+// Use this struct to implement high-precision nanosleeps
+struct Timer {
+    _timemap: Option<MemoryMap>,
+    timereg: *mut u32 // a raw pointer to the 1Mhz timer register (see section 2.5 in the assignment)
+}
+
+
+
 
 type gpio_bits_t = u32;
 
@@ -429,57 +407,7 @@ impl Timer {
         return;
     }
 }
-// The Frame should contain the pixels that are currently shown
-// on the LED board. In most cases, the Frame will have less pixels
-// than the input Image!
-impl Frame {
-    fn new() -> Frame {
-        let frame: Frame = Frame {
-            pos: 0,
-            pixels: vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize],
-        };
 
-        frame
-    }
-
-    fn next_image_frame(&mut self) {
-        for row in 0..ROWS {
-            for col in 0..COLUMNS {
-                let _image_position = (self.pos) as usize;
-                
-                //lijntje hier onder is nog 'raw'
-                //self.pixels[row][col] = image.pixels[row][image_position].clone();
-            
-                //raw -> full
-                let raw_color = Pixel::new();
-
-                //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
-                self.pixels[row as usize][col as usize].r = self.raw_color_to_full_color(raw_color.r);
-                self.pixels[row as usize][col as usize].g = self.raw_color_to_full_color(raw_color.g);
-                self.pixels[row as usize][col as usize].b = self.raw_color_to_full_color(raw_color.b);
-            
-            }
-        }
-
-    }
-
-    //voor gamma correction
-    fn raw_color_to_full_color(self: &mut Frame, raw_color: u8) -> u8{
-        //let full_color = ((raw_color as u32)* ((1<<COLOR_DEPTH) -1)/255) as u16;
-        let gammaCorrection : f32 = 1.75;
-        
-        let _raw_color_float = raw_color as f32;
-        let max_value_float = 255 as f32;
-        
-        let full_color = (max_value_float * (raw_color as f32 / max_value_float).powf(gammaCorrection)) as u8;
-        
-        full_color
-    }
-
-    fn clear_frame(self:&mut Frame){
-        self.pixels=vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize];
-    }
-}
 
 
 

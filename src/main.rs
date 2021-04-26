@@ -108,13 +108,11 @@ pub fn main() {
     };
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------
-    if args.len() > 2 {
-        if args[2] == "--colors=grey"{
-            image.to_grey_scale();
-        }else if args[2] == "--colors=invert"{
-            image.invert_colors();
-        }else{
-            eprintln!("no options given");
+    for arg in args.iter() {
+        match arg.as_str() {
+            "--colors=grey" => image.to_grey_scale(),
+            "--colors=invert" => image.invert_colors(),
+            _ => ()
         }
     }
 

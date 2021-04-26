@@ -24,8 +24,8 @@ pub use byteorder::ReadBytesExt;
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
 use shuteye::sleep;
-use std::time::{Duration,SystemTime};
-use std::{thread};
+use std::time::{Duration};
+
 
 /* -------------------------------------------- LAB 4 IMPORTS --------------------------------------------*/
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -39,8 +39,8 @@ use mmap::{MemoryMap, MapOption};// ============================================
 
 
 /* -------------------------------------------- OWN IMPORTS --------------------------------------------*/
-use rand::thread_rng;
-use rand::Rng;
+
+
 
 /* -------------------------------------------- LAB 4 STRUCTS --------------------------------------------*/
 struct GPIO {
@@ -445,7 +445,7 @@ impl Frame {
     fn next_image_frame(&mut self) {
         for row in 0..ROWS {
             for col in 0..COLUMNS {
-                let image_position = (self.pos) as usize;
+                let _image_position = (self.pos) as usize;
                 
                 //lijntje hier onder is nog 'raw'
                 //self.pixels[row][col] = image.pixels[row][image_position].clone();
@@ -468,7 +468,7 @@ impl Frame {
         //let full_color = ((raw_color as u32)* ((1<<COLOR_DEPTH) -1)/255) as u16;
         let gammaCorrection : f32 = 1.75;
         
-        let raw_color_float = raw_color as f32;
+        let _raw_color_float = raw_color as f32;
         let max_value_float = 255 as f32;
         
         let full_color = (max_value_float * (raw_color as f32 / max_value_float).powf(gammaCorrection)) as u8;
@@ -534,8 +534,8 @@ pub fn main() {
 // TODO00000000: Initialize the GPIO struct and the Timer struct
 // ============================================================================
     let mut io = GPIO::new(1);
-    let timer = Timer::new();
-    let mut frame = Frame::new();
+    let _timer = Timer::new();
+    let _frame = Frame::new();
 
     // This code sets up a CTRL-C handler that writes "true" to the 
     // interrupt_received bool.

@@ -2,7 +2,7 @@
 use super::pixel::Pixel;
 
 use byteorder::ReadBytesExt;
-use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
+use std::io::{Read, Cursor,Seek,SeekFrom};
 
 pub struct Image {
     // TODO: SHOULD NOT BE PRIVATE
@@ -88,7 +88,7 @@ impl Image {
         /* INLEZEN VAN BREEDTE EN HOOGTE */
         image.width=Image::read_number(cursor)?;
         image.height=Image::read_number(cursor)?;
-        let colourRange = Image::read_number(cursor)?;
+        let _colourRange = Image::read_number(cursor)?;
     
         /* eventuele whitespaces na eerste lijn */
         Image::consume_whitespaces(cursor)?;

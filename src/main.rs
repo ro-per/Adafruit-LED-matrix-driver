@@ -1,8 +1,12 @@
 // ==================================== PROJECT IMPORTS =======================================
 pub mod util;
+// import structs
 use util::pixel::Pixel;
 use util::image::Image;
 use util::frame::Frame;
+use util::timer::Timer;
+use util::mmap_bcm_register::*;
+
 // ==================================== CRATES =======================================
 extern crate libc;
 extern crate time;
@@ -20,7 +24,6 @@ use std::fs::File;
 use byteorder::ReadBytesExt;
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
-use shuteye::sleep;
 use std::time::{Duration};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -85,55 +88,15 @@ struct GPIO {
 
 
 
-// Use this struct to implement high-precision nanosleeps
-struct Timer {
-    _timemap: Option<MemoryMap>,
-    timereg: *mut u32 // a raw pointer to the 1Mhz timer register (see section 2.5 in the assignment)
-}
+
 
 
 
 
 type gpio_bits_t = u32;
 
-// ============================================================================
-// mmap_bcm_register - convenience function used to map the GPIO register block
-// ============================================================================
 
-fn mmap_bcm_register(register_offset: usize) -> Option<MemoryMap> {
 
-    let mem_file =
-        match OpenOptions::new()
-            .read(true)
-            .write(true)
-            .custom_flags(libc::O_SYNC)
-            .open("/dev/mem") {
-            Err(why) => panic!("couldn't open /dev/mem: {}", why),
-            Ok(file) => file
-        };
-
-    let mmap_options = &[
-        MapOption::MapNonStandardFlags(libc::MAP_SHARED),
-        MapOption::MapReadable,
-        MapOption::MapWritable,
-        MapOption::MapFd(mem_file.as_raw_fd()),
-        MapOption::MapOffset(BCM2709_PERI_BASE as usize + register_offset as usize)
-    ];
-
-    let result = MemoryMap::new(REGISTER_BLOCK_SIZE as usize, mmap_options).unwrap();
-
-    return match result.data().is_null() {
-        true => {
-            eprintln!("mmap error: {}", std::io::Error::last_os_error());
-            eprintln!("Pi3: MMapping from base 0x{:X}, offset 0x{:X}", BCM2709_PERI_BASE, register_offset);
-            None
-        },
-        false => Some(result)
-    };
-
-    // NOTE/WARNING: When a MemoryMap struct is dropped, the mapped 
-    // memory region is automatically unmapped!
-}
 
 //
 // NOTE/WARNING: In many cases, particularly those where you need to set or clear 
@@ -329,84 +292,7 @@ impl GPIO {
     }
 }
 
-impl Timer {
-    // Reads from the 1Mhz timer register (see Section 2.5 in the assignment)
-    unsafe fn read(self: &Timer) -> u32 {
-        //DONE???
-        // TODO: Implement this yourself.
-        let tijd:u32 = std::ptr::read_volatile(self.timereg);
-        tijd
-    }
 
-    fn new() -> Timer {
-        //DONE???
-        // TODO: Implement this yourself.
-
-        let map = mmap_bcm_register(TIMER_REGISTER_OFFSET as usize);
-
-        let mut timer: Timer = Timer {
-            _timemap: None,
-            timereg: 0 as *mut u32,
-        };
-
-        match &map {
-            &Some(ref map) => {
-                unsafe {
-                    timer.timereg = map.data() as *mut u32;
-                    timer.timereg.offset(1);
-                }
-            }
-            &None => {}
-        };
-        timer
-    }
-
-    // High-precision sleep function (see section 2.5 in the assignment)
-    // NOTE/WARNING: Since the raspberry pi's timer frequency is only 1Mhz, 
-    // you cannot reach full nanosecond precision here. You will have to think
-    // about how you can approximate the desired precision. Obviously, there is
-    // no perfect solution here.
-    fn nanosleep( self: &Timer,  mut nanos: u32) {
-        //DONE???
-        // TODO: Implement this yourself.
-
-        let k_jitter_allowance = 60 * 1000 + 0;
-
-		 if nanos > k_jitter_allowance{
-		
-            let before:u32= unsafe {self.read()};
-            let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
-            sleep(sleep_time);
-            let after:u32 = unsafe {self.read()};
-            let time_passed: u64 ;
-
-            if after > before {
-                time_passed = 1000 * (after - before) as u64;
-            }
-            else{
-                time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
-            }
-            if time_passed > nanos as u64 {
-                return
-            }
-            else{
-                nanos -= time_passed as u32;
-            }
-        }
-
-        if nanos < 20 {
-            return;
-        }
-
-        let start_time: u32 = unsafe { self.read() };
-        let mut current_time: u32 = start_time;
-
-        while start_time + (nanos * 1000) <= current_time {
-            current_time = unsafe { self.read() };
-        }
-        return;
-    }
-}
 
 
 
@@ -458,9 +344,7 @@ pub fn main() {
 
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
-// ============================================================================
-// TODO00000000: Initialize the GPIO struct and the Timer struct
-// ============================================================================
+
     let mut io = GPIO::new(1);
     let _timer = Timer::new();
     let _frame = Frame::new();

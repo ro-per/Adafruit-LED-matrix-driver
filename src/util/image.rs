@@ -80,6 +80,13 @@ impl Image {
             }
         }
     }
+    pub fn mirror_vertical(&mut self){
+        self.pixels.reverse();
+    }
+    pub fn mirror_horizontal(&mut self){
+        for _ 
+        
+    }
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>)-> Result<usize,std::io::Error>{
         let parent_method = "Image/read_number:";

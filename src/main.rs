@@ -112,6 +112,8 @@ pub fn main() {
         match arg.as_str() {
             "--colors=grey" => image.to_grey_scale(),
             "--colors=invert" => image.invert_colors(),
+            "--mirror=vertical" => image.mirror_vertical(),
+            "--mirror=horizontal" => image.mirror_horizontal(),
             _ => ()
         }
     }

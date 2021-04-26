@@ -61,9 +61,9 @@ const TIMER_OVERFLOW: u32 =4294967295;
 const COLUMNS: usize = 32;
 const ROWS: usize = 16;
 
-type gpio_bits_t = u32;
 
 // MACRO FOR CREATING BITMASKS
+type gpio_bits_t = u32;
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit

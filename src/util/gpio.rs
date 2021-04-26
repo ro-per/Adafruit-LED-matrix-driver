@@ -1,17 +1,35 @@
+// ==================================== PROJECT IMPORTS =======================================
 use super::pixel::Pixel;
-
 use crate::{*};
+// ==================================== EXTERN IMPORTS =======================================
 use mmap::{MemoryMap, MapOption};
+
+// ============================================================================
+// GPIO configuration parameters for the raspberry pi 3
+
+/* NOTE/WARNING 1 : In many cases, particularly those where you need to set or clear multiple bits at once, 
+it is convenient to store multiple pin numbers in one bit mask value. 
+If you want to simultaneously set PIN_A and PIN_C to high, for example, 
+you should probably create a bit mask with the positions of PIN_A and PIN_C set to 1, 
+and all other positions set to 0. You can do this using the GPIO_BIT! macro.
+In this example, you would do something like:
+let pin_mask = GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_C);
+io.set_bits(pin_mask);*/
+
+/* NOTE/WARNING 2 : This method configures one pin at a time. 
+The @pin_num argument that is expected here is really a pin number and not a bitmask!
+Would be WRONG: io.configure_output_pin(VALID_BITS);
+Would be OK: if GPIO_BIT!(PIN_A) & VALID_BITS {io.configure_output_pin(PIN_A);}*/
+// ============================================================================
+
+// MACRO FOR CREATING BITMASKS
 type gpio_bits_t = u32;
-
-
-
-// [DUPLICATE IN main.rs]        Use this bitmask for sanity checks // Convenience macro for creating bitmasks. See comment above "impl GPIO" below
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit
     };
 }
+
 const VALID_BITS: u64 = GPIO_BIT!(PIN_OE) | GPIO_BIT!(PIN_CLK) | GPIO_BIT!(PIN_LAT) |
     GPIO_BIT!(PIN_A)  | GPIO_BIT!(PIN_B)  | GPIO_BIT!(PIN_C)   | GPIO_BIT!(PIN_D)   | GPIO_BIT!(PIN_E) |
     GPIO_BIT!(PIN_R1) | GPIO_BIT!(PIN_G1) | GPIO_BIT!(PIN_B1)  |
@@ -31,90 +49,8 @@ pub struct GPIO {
     bitplane_timings: [u32; COLOR_DEPTH]
 }
 
-//
-// NOTE/WARNING: In many cases, particularly those where you need to set or clear 
-// multiple bits at once, it is convenient to store multiple pin numbers in one bit 
-// mask value. If you want to simultaneously set PIN_A and PIN_C to high, for example, 
-// you should probably create a bit mask with the positions of PIN_A and PIN_C set to 1, 
-// and all other positions set to 0. You can do this using the GPIO_BIT! macro.
-//
-// In this example, you would do something like:
-//     let pin_mask = GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_C);
-//     io.set_bits(pin_mask);
-//
 impl GPIO {
-
-    //
-    // configures pin number @pin_num as an output pin by writing to the 
-    // appropriate Function Select register (see section 2.1).
-    // 
-    // NOTE/WARNING: This method configures one pin at a time. The @pin_num argument 
-    // that is expected here is really a pin number and not a bitmask!
-    //
-    // Doing something like:
-    //     io.configure_output_pin(VALID_BITS);
-    // Would be WRONG! This call would make the program crash.
-    //
-    // Doing something like:
-    //     if GPIO_BIT!(PIN_A) & VALID_BITS {
-    //         io.configure_output_pin(PIN_A);
-    //     }
-    // Would be OK!
-    //
-    fn configure_output_pin(self: &mut GPIO, pin_num: u64) {
-        let register_num = (pin_num / 10) as isize;
-        let register_ref = unsafe { self.gpio_port_.offset(register_num) };
-        // NOTE/WARNING: When reading from or writing to MMIO memory regions, you MUST 
-        // use the std::ptr::read_volatile and std::ptr::write_volatile functions
-        let current_val = unsafe { std::ptr::read_volatile(register_ref) };
-        // the bit range within the register is [(pin_num % 10) * 3 .. (pin_num % 10) * 3 + 2]
-        // we need to set these bits to 001
-        let new_val = (current_val & !(7 << ((pin_num % 10)*3))) | (1 << ((pin_num % 10)*3));
-        // NOTE/WARNING: When reading from or writing to MMIO memory regions, you MUST 
-        // use the std::ptr::read_volatile and std::ptr::write_volatile functions
-        unsafe { std::ptr::write_volatile(register_ref, new_val) };
-    }
-
-    fn init_outputs(self: &mut GPIO, mut outputs: u32) -> u32 {
-        self.configure_output_pin(4 as u64);
-        self.configure_output_pin(18 as u64);
-
-        outputs &= !(self.output_bits_ | self.input_bits_);
-
-		let valid_output = outputs & (VALID_BITS as u32);
-
-        for b in 0..28 {
-            if (GPIO_BIT!(b) & valid_output) != 0 {
-                self.configure_output_pin(b as u64);
-            }
-        }
-        valid_output
-    }
-
-    pub fn set_bits(self: &mut GPIO, value: u32) {
-        unsafe {
-            std::ptr::write_volatile(self.gpio_set_bits_, value);
-            for _iter in 0..self.slowdown_ {
-                std::ptr::write_volatile(self.gpio_set_bits_, value);
-            }
-        }
-    }
-
-    pub fn clear_bits(self: &mut GPIO, value: u32) {
-        unsafe {
-            std::ptr::write_volatile(self.gpio_clr_bits_, value);
-            for _iter in 0..self.slowdown_ {
-                std::ptr::write_volatile(self.gpio_clr_bits_, value);
-            }
-        }
-    }
-
-    // Write all the bits of @value that also appear in @mask. Leave the rest untouched.
-    // @value and @mask are bitmasks
-    pub fn write_masked_bits(self: &mut GPIO,value: u32,mask: u32) {
-        self.clear_bits(!value & mask);
-        self.set_bits(value & mask);
-    }
+    
 
     // ==================================== CONSTRUCTOR =======================================
     pub fn new(slowdown: u32) -> GPIO {
@@ -185,6 +121,33 @@ impl GPIO {
         io.gpio_map_ = map;
         io
     }
+    // ==================================== PUBLIC FUNCTIONS =======================================
+    pub fn set_bits(self: &mut GPIO, value: u32) {
+        unsafe {
+            std::ptr::write_volatile(self.gpio_set_bits_, value);
+            for _iter in 0..self.slowdown_ {
+                std::ptr::write_volatile(self.gpio_set_bits_, value);
+            }
+        }
+    }
+
+    pub fn clear_bits(self: &mut GPIO, value: u32) {
+        unsafe {
+            std::ptr::write_volatile(self.gpio_clr_bits_, value);
+            for _iter in 0..self.slowdown_ {
+                std::ptr::write_volatile(self.gpio_clr_bits_, value);
+            }
+        }
+    }
+
+    // Write all the bits of @value that also appear in @mask. Leave the rest untouched.
+    // @value and @mask are bitmasks
+    pub fn write_masked_bits(self: &mut GPIO,value: u32,mask: u32) {
+        self.clear_bits(!value & mask);
+        self.set_bits(value & mask);
+    }
+
+
 
     // Calculates the pins we must activate to push the address of the specified double_row
     pub fn get_row_bits(self: &GPIO, double_row: u8) -> u32 {
@@ -224,4 +187,36 @@ impl GPIO {
 
        out
     }
+    // ==================================== PRIVATE FUNCTIONS =======================================
+    fn configure_output_pin(self: &mut GPIO, pin_num: u64) {
+        let register_num = (pin_num / 10) as isize;
+        let register_ref = unsafe { self.gpio_port_.offset(register_num) };
+        // NOTE/WARNING: When reading from or writing to MMIO memory regions, you MUST 
+        // use the std::ptr::read_volatile and std::ptr::write_volatile functions
+        let current_val = unsafe { std::ptr::read_volatile(register_ref) };
+        // the bit range within the register is [(pin_num % 10) * 3 .. (pin_num % 10) * 3 + 2]
+        // we need to set these bits to 001
+        let new_val = (current_val & !(7 << ((pin_num % 10)*3))) | (1 << ((pin_num % 10)*3));
+        // NOTE/WARNING: When reading from or writing to MMIO memory regions, you MUST 
+        // use the std::ptr::read_volatile and std::ptr::write_volatile functions
+        unsafe { std::ptr::write_volatile(register_ref, new_val) };
+    }
+
+    fn init_outputs(self: &mut GPIO, mut outputs: u32) -> u32 {
+        self.configure_output_pin(4 as u64);
+        self.configure_output_pin(18 as u64);
+
+        outputs &= !(self.output_bits_ | self.input_bits_);
+
+		let valid_output = outputs & (VALID_BITS as u32);
+
+        for b in 0..28 {
+            if (GPIO_BIT!(b) & valid_output) != 0 {
+                self.configure_output_pin(b as u64);
+            }
+        }
+        valid_output
+    }
+
+   
 }

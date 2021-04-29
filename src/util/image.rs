@@ -1,5 +1,7 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::pixel::Pixel;
+use crate::{COLUMNS,ROWS};
+
 // ==================================== EXTERN IMPORTS =======================================
 use byteorder::ReadBytesExt;
 use std::io::{Read, Cursor,Seek,SeekFrom};
@@ -64,6 +66,12 @@ impl Image {
     
         println!("{} Decoding done !",parent_method);
     
+
+        let y_scale = ROWS as f64 / image.height as f64;
+        let x_scale =  y_scale;
+
+        Image::scale(&mut image, x_scale, y_scale);
+
         Ok(image)
     }
     pub fn to_grey_scale(&mut self){
@@ -138,6 +146,67 @@ impl Image {
         Ok(()) // () : de lege haakjes betekend  niks returnen
     }
 
+    
+  
+    
+    
+    fn lin(s: f64, e: f64, t:f64) -> f64{
+        let y = s + (e-s) * t;
+        y
+    }
+
+    fn bilin(c00: f64, c01: f64, c10:f64, c11:f64, tx: f64, ty: f64) -> u8 {
+        let result = Image::lin(Image::lin(c00, c10, tx), Image::lin(c01, c11, tx), ty) as u8;
+        result 
+    }
+
+    fn scale(image: &mut Image, x_scale: f64, y_scale: f64){
+        // Scale the image to the appropriate height of the LED display
+        // Kudos to: https://rosettacode.org/wiki/Bilinear_interpolation
+        
+        let mut pixels: Vec<Vec<Pixel>> = vec![];
+        let new_width = (x_scale * image.width as f64) as u32;
+        let new_height = (y_scale * image.height as f64) as u32;
+
+        println!("Scaling: {}x{} -> {}x{}", image.height, image.width, new_height, new_width);
+
+        for i in 0..new_height{
+            
+            let mut pixel_row = Vec::new();
+            
+            for j in 0..new_width{
+                
+                let gy = i as f64 / new_height as f64 * (image.height - 1) as f64;
+                let gx = j as f64 / new_width as f64 * (image.width - 1) as f64; 
+                
+                let gyi = gy as usize;
+                let gxi = gx as usize;
+
+                // surrounding pixels
+                let c00 = &image.pixels[gyi][gxi];
+                let c01 = &image.pixels[gyi+1][gxi];
+                let c10 = &image.pixels[gyi][gxi+1];
+                let c11 = &image.pixels[gyi+1][gxi+1];
+                
+                let r = Image::bilin(c00.r as f64, c01.r as f64, c10.r as f64, c11.r as f64, gx-gxi as f64, gy-gyi as f64);
+                let g = Image::bilin(c00.g as f64, c01.g as f64, c10.g as f64, c11.g as f64, gx-gxi as f64, gy-gyi as f64);
+                let b = Image::bilin(c00.b as f64, c01.b as f64, c10.b as f64, c11.b as f64, gx-gxi as f64, gy-gyi as f64);
+
+                let pixel = Pixel{
+                    r: r,
+                    g: g,
+                    b: b
+                };
+                pixel_row.push(pixel.clone());
+            }
+            pixels.push(pixel_row.clone());
+        }
+
+        image.width = new_width as usize;
+        image.height = new_height as usize;
+        image.pixels = pixels;
+    }
+
     /* fn show_image(image: &Image) {
         let sdl = sdl2::init().unwrap();
         let video_subsystem = sdl.video().unwrap();
@@ -189,9 +258,4 @@ impl Image {
             sleep(Duration::new(0, 250000000));
         }
     } */
-
-  
-    
-    
-    
 }

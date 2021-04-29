@@ -1,7 +1,6 @@
 // ==================================== PROJECT IMPORTS =======================================
 pub mod util;
 // import structs
-
 use util::image::Image;
 use util::frame::Frame;
 use util::timer::Timer;
@@ -23,6 +22,9 @@ extern crate rand;
 use std::io::{Error, ErrorKind,Read, Cursor,Seek,SeekFrom};
 use std::path::Path;
 use std::fs::File;
+use std::time::{Duration,SystemTime};
+use time::Timespec;
+
 
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;

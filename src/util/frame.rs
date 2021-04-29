@@ -4,9 +4,7 @@ use super::image::Image;
 
 use crate::{COLUMNS,ROWS};
 
-extern crate time;
-use std::time::{Duration,SystemTime};
-use time::Timespec;
+
 // ===========================================================================
 // This is a representation of the frame we're currently rendering
 // ===========================================================================
@@ -40,7 +38,7 @@ impl Frame {
                 let image_position = (self.pos + col) % image.width ;
        
                 //let raw_color = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
-                let rgb = image.pixels[row][col];
+                let rgb = &image.pixels[row][col];
 
                 //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
                 self.pixels[row as usize][col as usize].r = rgb.r as u8;

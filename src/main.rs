@@ -119,13 +119,18 @@ pub fn main() {
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
     // ------------------------------------ INIT GPIO ------------------------------------
-    let mut io = GPIO::new(1);
+    let mut io = GPIO::new(1);  //Slowdown = 2 mag je mee spelen
 
     // ------------------------------------ INIT TIMER ------------------------------------
-    let _timer = Timer::new();
+    let mut timer = Timer::new();
 
     // ------------------------------------ INIT FRAME ------------------------------------
-    let _frame = Frame::new();
+    let mut frame = Frame::new();
+    //Image inladen in het frame
+    frame.next_image_frame(&image); //TODO CEDRIC (mag wss weg)
+    //Clock starten
+    let mut begin = time::get_time();
+    let mut current_time: Timespec;
 
     // ------------------------------------ CTRL+C HANDLER ------------------------------------
     let int_recv = interrupt_received.clone();
@@ -175,6 +180,17 @@ pub fn main() {
             }
         }
     }
+
+    // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
+    current_time = time::get_time();
+    let diff = current_time - begin;
+    
+    // snelheid scrollen 
+    if diff >= time::Duration::milliseconds(10){
+        frame.next_image_frame(&image);
+        begin=current_time;
+    };
+
     // ------------------------------------ INTERRUPT HANDLER ------------------------------------
     if interrupt_received.load(Ordering::SeqCst) == true {
         println!("\n{} Received CTRL-C",parent_method);

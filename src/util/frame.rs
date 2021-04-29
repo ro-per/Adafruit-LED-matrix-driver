@@ -16,7 +16,6 @@ In most cases, the Frame will have less pixels than the input Image!*/
 impl Frame {
     // ==================================== CONSTRUCTOR =======================================
     pub fn new() -> Frame {
-
         let frame: Frame = Frame {
             pos: 0,
             pixels: vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize],
@@ -27,14 +26,30 @@ impl Frame {
     // ==================================== PUBLIC FUNCTIONS =======================================
 
     // ==================================== PRIVATE FUNCTIONS =======================================
-    fn next_image_frame(&mut self) {
+    fn next_image_frame(&mut self, image: &Image) {
+        
+        // let blokgrootte_breedte = image.width/(COLUMNS*3);
+        // let blokgrootte_lengte = image.height/ROWS;
+        
         for row in 0..ROWS {
             for col in 0..COLUMNS {
-                let _image_position = (self.pos) as usize;
-    
+                //let image_position = ((self.pos + col*blokgrootte_breedte) as usize % image.width) as usize;
+                let image_position = (self.pos + col) % image.width ;
+       
+                //let raw_color = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
+                let rgb = image.pixels[row][col];
+
+                //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
+                self.pixels[row as usize][col as usize].r = rgb.r as u8;
+                self.pixels[row as usize][col as usize].g = rgb.g as  u8;
+                self.pixels[row as usize][col as usize].b = rgb.b as u8;
             }
         }
 
+        self.pos = self.pos + 1;
+        if self.pos >= image.width as usize {
+            self.pos = 0;
+        }
     }
 
 

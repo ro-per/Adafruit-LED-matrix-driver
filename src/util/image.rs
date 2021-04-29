@@ -172,7 +172,7 @@ impl Image {
 
         for i in 0..new_height{
             
-            let mut pixel_row = Vec::new();
+            let mut pixel_row = Vec::new(); //TODO Nick init met alles zwart
             
             for j in 0..new_width{
                 

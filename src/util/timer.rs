@@ -50,41 +50,47 @@ impl Timer {
     // ==================================== PUBLIC FUNCTIONS =======================================
 
     // ==================================== PRIVATE FUNCTIONS =======================================    
-    fn nanosleep( self: &Timer,  mut nanos: u32) {
-        let k_jitter_allowance = 60 * 1000 + 0;
+    fn nanosleep(self: &Timer, mut nanos: u32) {
+        // TODO: Implement this yourself.
+        let k_jitter_allowance = 60 * 1000 ;
 
-		 if nanos > k_jitter_allowance{
-		
-            let before:u32= unsafe {self.read()};
-            let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
-            sleep(sleep_time);
-            let after:u32 = unsafe {self.read()};
-            let time_passed: u64 ;
+        if nanos > (k_jitter_allowance+5000){
+       
+           let before:u32= unsafe {self.read()};
+           let sleep_time = Duration::new(0, nanos - k_jitter_allowance);
+           sleep(sleep_time);
+           let after:u32 = unsafe {self.read()};
+           let time_passed = 1000 * (after-before);
+           if time_passed > nanos{
+               return;
+           } else {
+               nanos -= time_passed;
+           }
 
-            if after > before {
-                time_passed = 1000 * (after - before) as u64;
-            }
-            else{
-                time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
-            }
-            if time_passed > nanos as u64 {
-                return
-            }
-            else{
-                nanos -= time_passed as u32;
-            }
-        }
+        //    if after > before {
+        //        time_passed = 1000 * (after - before) as u64;
+        //    }
+        //    else{
+        //        time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
+        //    }
+        //    if time_passed > nanos as u64 {
+        //        return
+        //    }
+        //    else{
+        //        nanos -= time_passed as u32;
+        //    }
+       }
 
-        if nanos < 20 {
-            return;
-        }
+       if nanos < 20 {
+           return;
+       }
 
-        let start_time: u32 = unsafe { self.read() };
-        let mut current_time: u32 = start_time;
+    //    let start_time: u32 = unsafe { self.read() };
+    //    let mut current_time: u32 = start_time;
 
-        while start_time + (nanos * 1000) <= current_time {
-            current_time = unsafe { self.read() };
-        }
-        return;
+    //    while start_time + (nanos * 1000) <= current_time {
+    //        current_time = unsafe { self.read() };
+    //    }
+    //    return;
     }
 }

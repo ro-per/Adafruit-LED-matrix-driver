@@ -30,7 +30,6 @@ atrr= {width | height | pixels: Vec<Vec<Pixel>>}
 - [ ] ```fn nanosleep(self: &Timer, mut nanos: u32)```
 
 ### 1.C Effects                             <a name="IC"></a>
-- [ ] --F(ade): Show static Frame that fades in and out (use PulsWidthModulation)
 - [ ] --S(croll)M(ode)=
     * A(uto)   : Scrolling automatically
     * M(ouse)  :Scroll with mouse

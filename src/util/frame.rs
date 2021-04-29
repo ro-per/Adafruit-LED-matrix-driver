@@ -1,7 +1,12 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::pixel::Pixel;
+use super::image::Image;
+
 use crate::{COLUMNS,ROWS};
 
+extern crate time;
+use std::time::{Duration,SystemTime};
+use time::Timespec;
 // ===========================================================================
 // This is a representation of the frame we're currently rendering
 // ===========================================================================
@@ -24,9 +29,7 @@ impl Frame {
         frame
     }
     // ==================================== PUBLIC FUNCTIONS =======================================
-
-    // ==================================== PRIVATE FUNCTIONS =======================================
-    fn next_image_frame(&mut self, image: &Image) {
+    pub fn next_image_frame(&mut self, image: &Image) {
         
         // let blokgrootte_breedte = image.width/(COLUMNS*3);
         // let blokgrootte_lengte = image.height/ROWS;
@@ -57,3 +60,4 @@ impl Frame {
         self.pixels=vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize];
     }
 }
+    // ==================================== PRIVATE FUNCTIONS =======================================

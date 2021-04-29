@@ -11,8 +11,8 @@ use std::io::{Read, Cursor,Seek,SeekFrom};
 // ===========================================================================
 pub struct Image {
     // TODO: SHOULD NOT BE PRIVATE
-    width: usize,   // 32
-    height: usize, //16
+    pub width: usize,   // 32
+    pub height: usize, //16
     pub pixels: Vec<Vec<Pixel>>
 }
 

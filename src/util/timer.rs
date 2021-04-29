@@ -51,7 +51,6 @@ impl Timer {
 
     // ==================================== PRIVATE FUNCTIONS =======================================    
     fn nanosleep(self: &Timer, mut nanos: u32) {
-        // TODO: Implement this yourself.
         let k_jitter_allowance = 60 * 1000 ;
 
         if nanos > (k_jitter_allowance+5000){
@@ -66,31 +65,10 @@ impl Timer {
            } else {
                nanos -= time_passed;
            }
-
-        //    if after > before {
-        //        time_passed = 1000 * (after - before) as u64;
-        //    }
-        //    else{
-        //        time_passed = 1000 * ( TIMER_OVERFLOW - before + after) as u64;
-        //    }
-        //    if time_passed > nanos as u64 {
-        //        return
-        //    }
-        //    else{
-        //        nanos -= time_passed as u32;
-        //    }
        }
 
        if nanos < 20 {
            return;
        }
-
-    //    let start_time: u32 = unsafe { self.read() };
-    //    let mut current_time: u32 = start_time;
-
-    //    while start_time + (nanos * 1000) <= current_time {
-    //        current_time = unsafe { self.read() };
-    //    }
-    //    return;
     }
 }

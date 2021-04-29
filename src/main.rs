@@ -30,10 +30,6 @@ use std::fs::File;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
-
-
-
-
 // ==================================== CONST =======================================
 const BCM2709_PERI_BASE: u64 = 0x3F000000;
 const GPIO_REGISTER_OFFSET: u64 = 0x200000;

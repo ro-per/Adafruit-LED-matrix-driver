@@ -32,49 +32,49 @@ impl Charset {
         self.bold = b;
     }
     pub fn get_text(&self, text: String) -> Image {
-        //let mut image: Image;
+        //let mut image: Image; //TODO
 
+        let mut text_matrix = Vec::new();
+
+        // ------------------------------ LOOP OVER EACH LITERAL ------------------------------
         for (index, lit) in text.chars().enumerate() {
-            // do something with character `c` and index `i`
-            println!("index{}, literal{}", index, lit);
-        }
+            //println!("index{}, literal{}", index, lit);
+            // ------------------------------ GET PIXEL RANGE ------------------------------
+            let row_start = 0;
+            let row_stop = 10;
+            let h = row_stop - row_start;
+            assert!(h > 0, "negative height");
 
-        // -----------------------------------------------
-        let row_start = 0;
-        let row_stop = 10;
-        let h = row_stop - row_start;
-        assert!(h > 0, "negative height");
+            let col_start = 0;
+            let col_stop = 20;
+            let w = col_stop - col_start;
+            assert!(w > 0, "negative width");
 
-        let col_start = 0;
-        let col_stop = 20;
-        let w = col_stop - col_start;
-        assert!(w > 0, "negative width");
-
-        let mut character = Image {
-            width: w,
-            height: h,
-            pixels: vec![],
-        };
-
-        // LOOP CHARSET IN GIVEN FRAME
-        for row in row_start..row_stop {
-            let mut r = Vec::new();
+            // ------------------------------ LOOP CHARACTERSET FOR GIVEN RANGE ------------------------------
             for col in col_start..col_stop {
-                let pix = &self.ppm_charset.pixels[row][col];
+                let mut column = Vec::new();
+                for row in row_start..row_stop {
+                    let pix = &self.ppm_charset.pixels[row][col];
 
-                let pixel = Pixel {
-                    r: pix.r,
-                    g: pix.g,
-                    b: pix.b,
-                };
-
-                r.push(pixel);
+                    let pixel = Pixel {
+                        r: pix.r,
+                        g: pix.g,
+                        b: pix.b,
+                    };
+                    column.push(pixel);
+                }
+                text_matrix.push(column);
             }
-            character.pixels.push(r);
         }
-
-        // -----------------------------------------------
-        //character.print_to_console();
-        character
+        // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
+        //todo
+        // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
+        //todo
+        // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
+        let mut image = Image::new(text_matrix);
+        //text_matrix
+        image.print_to_console();
+        image
     }
+    // ==================================== PRIVATE FUNCTIONS =======================================
 }

@@ -18,7 +18,15 @@ pub struct Image {
 
 impl Image {
     // ==================================== CONSTRUCTOR =======================================
-
+    pub fn new(row_col: Vec<Vec<Pixel>>) -> Image {
+        let mut image: Image = Image {
+            width: 0,
+            height: 0,
+            pixels: Vec::new(),
+        };
+        image.set_pixels(row_col);
+        image
+    }
     // ==================================== PUBLIC FUNCTIONS =======================================
     pub fn set_pixels(&mut self, pixels: Vec<Vec<Pixel>>) {
         self.pixels = pixels;
@@ -145,7 +153,13 @@ impl Image {
         };
         image
     }
-
+    pub fn transponate_image(&mut self) {
+        for x in 0..self.width {
+            for y in 0..self.height {
+                //TODO
+            }
+        }
+    }
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>) -> Result<usize, std::io::Error> {
         let parent_method = "Image/read_number:";

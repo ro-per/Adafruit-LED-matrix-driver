@@ -11,32 +11,70 @@ use std::str;
 // ===========================================================================
 
 pub struct Charset {
-    name: String,
-    pub map: HashMap<String, usize>,
+    bold: bool,
+    ppm_charset: Image,
+    //pub map: HashMap<String, usize>, //TODO mapping position
 }
 
 impl Charset {
     // ==================================== CONSTRUCTOR =======================================
-    pub fn new() -> Charset {
+    pub fn new(bold: bool) -> Charset {
         // TODO pass name argument
+        let path = "ppm/octafont.ppm".to_string();
         let char_map: Charset = Charset {
-            name: "Regular".to_string(),
-            map: HashMap::new(),
+            bold: bold,
+            ppm_charset: Image::read_ppm_image(&path, false), //map: HashMap::new(),
         };
         char_map
     }
     // ==================================== PUBLIC FUNCTIONS =======================================
-
-    pub fn init_map(&mut self) {
-        self.map.insert(String::from("A"), 10);
-        self.map.insert(String::from("B"), 100);
-        self.map.insert(String::from("C"), 100);
+    pub fn set_bold(&mut self, b: bool) {
+        self.bold = b;
     }
-    pub fn get_image(&mut self, string: String) {
-        let value = self.map.get(&string);
+    pub fn get_text(&self, text: String) -> Image {
+        //let mut image: Image;
 
-        if let temp = Some(value) {
-            println!("Print out {:?}", value);
+        for (index, lit) in text.chars().enumerate() {
+            // do something with character `c` and index `i`
+            println!("index{}, literal{}", index, lit);
+        }
+
+        // -----------------------------------------------
+        let row_start = 0;
+        let row_stop = 10;
+        let h = row_stop - row_start;
+        assert!(h > 0, "negative height");
+
+        let col_start = 0;
+        let col_stop = 20;
+        let w = col_stop - col_start;
+        assert!(w > 0, "negative width");
+
+        let mut character = Image {
+            width: w,
+            height: h,
+            pixels: vec![],
         };
+
+        // LOOP CHARSET IN GIVEN FRAME
+        for row in row_start..row_stop {
+            let mut r = Vec::new();
+            for col in col_start..col_stop {
+                let pix = &self.ppm_charset.pixels[row][col];
+
+                let pixel = Pixel {
+                    r: pix.r,
+                    g: pix.g,
+                    b: pix.b,
+                };
+
+                r.push(pixel);
+            }
+            character.pixels.push(r);
+        }
+
+        // -----------------------------------------------
+        //character.print_to_console();
+        character
     }
 }

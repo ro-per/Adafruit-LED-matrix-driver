@@ -1,6 +1,6 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::pixel::Pixel;
-use crate::{COLUMNS, ROWS};
+use crate::*;
 
 // ==================================== EXTERN IMPORTS =======================================
 use byteorder::ReadBytesExt;
@@ -20,6 +20,11 @@ impl Image {
     // ==================================== CONSTRUCTOR =======================================
 
     // ==================================== PUBLIC FUNCTIONS =======================================
+    pub fn set_pixels(&mut self, pixels: Vec<Vec<Pixel>>) {
+        self.pixels = pixels;
+        self.width = self.pixels[0].len();
+        self.height = self.pixels.len();
+    }
     pub fn decode_ppm_image(
         cursor: &mut Cursor<Vec<u8>>,
         scaling: bool,
@@ -54,7 +59,7 @@ impl Image {
                 let green = cursor.read_u8()?;
                 let blue = cursor.read_u8()?;
 
-                let mut pixel = Pixel {
+                let pixel = Pixel {
                     r: red,
                     g: green,
                     b: blue,
@@ -103,6 +108,11 @@ impl Image {
         }
     }
     pub fn print_to_console(&mut self) {
+        let parent_method = "Image/print_to_console:";
+        println!(
+            "{} Printing image of size W{}xH{} ...",
+            parent_method, self.width, self.height
+        );
         let mut print: String = "".to_string();
         for col in 0..self.height {
             for row in 0..self.width {
@@ -112,8 +122,30 @@ impl Image {
             }
             print += "\n";
         }
-        eprintln!("{}", print);
+        println!("{}", print);
+        println!("{} Printing done ...", parent_method);
     }
+    pub fn read_ppm_image(image_path: &String, scaling: bool) -> Image {
+        println!("Image path = {}", image_path);
+        let path = Path::new(&image_path);
+        let display = path.display();
+        let mut file = match File::open(&path) {
+            Err(why) => panic!("Could not open file: {} (Reason: {})", display, why),
+            Ok(file) => file,
+        };
+        // read the full file into memory. panic on failure
+        let mut raw_file = Vec::new();
+        file.read_to_end(&mut raw_file).unwrap();
+        // construct a cursor so we can seek in the raw buffer
+        let mut cursor = Cursor::new(raw_file);
+        let image = match Image::decode_ppm_image(&mut cursor, scaling) {
+            //TODO edit boolean
+            Ok(img) => img,
+            Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
+        };
+        image
+    }
+
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>) -> Result<usize, std::io::Error> {
         let parent_method = "Image/read_number:";

@@ -32,13 +32,11 @@ impl Charset {
         self.map.insert(String::from("B"), 100);
         self.map.insert(String::from("C"), 100);
     }
-    pub fn get_image(&mut self, string: String) -> &usize {
+    pub fn get_image(&mut self, string: String) {
         let value = self.map.get(&string);
 
         if let temp = Some(value) {
-            println!("Print out {:?}", v);
+            println!("Print out {:?}", value);
         };
-
-        v
     }
 }

@@ -67,6 +67,28 @@ macro_rules! GPIO_BIT {
         1 << $bit
     };
 }
+pub fn read_ppm_image(image_path: &String) -> Image {
+    eprintln!("Image path = {}", image_path);
+    let path = Path::new(&image_path);
+    let display = path.display();
+
+    let mut file = match File::open(&path) {
+        Err(why) => panic!("Could not open file: {} (Reason: {})", display, why),
+        Ok(file) => file,
+    };
+
+    // read the full file into memory. panic on failure
+    let mut raw_file = Vec::new();
+    file.read_to_end(&mut raw_file).unwrap();
+
+    // construct a cursor so we can seek in the raw buffer
+    let mut cursor = Cursor::new(raw_file);
+    let mut image = match Image::decode_ppm_image(&mut cursor) {
+        Ok(img) => img,
+        Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
+    };
+    image
+}
 
 // ==================================== MAIN =======================================
 pub fn main() {
@@ -85,24 +107,20 @@ pub fn main() {
     }
 
     // ------------------------------------ PPM PARSER (paht in args[1]) ------------------------------------
-    let path = Path::new(&args[1]);
-    let display = path.display();
 
-    let mut file = match File::open(&path) {
-        Err(why) => panic!("Could not open file: {} (Reason: {})", display, why),
-        Ok(file) => file,
-    };
+    // Characterset
 
-    // read the full file into memory. panic on failure
-    let mut raw_file = Vec::new();
-    file.read_to_end(&mut raw_file).unwrap();
-
-    // construct a cursor so we can seek in the raw buffer
-    let mut cursor = Cursor::new(raw_file);
-    let mut image = match Image::decode_ppm_image(&mut cursor) {
-        Ok(img) => img,
-        Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
-    };
+    //Image::show_image(&image); // requires sdl2 import (but takes long to build)
+    let character_set_ppm_path = String::from("ppm/octafont.ppm");
+    let default_image_path = String::from("ppm/kuleuven_logo.ppm");
+    let mut image = read_ppm_image(&default_image_path);
+    for arg in args.iter() {
+        match arg.as_str() {
+            "*ppm" => image = read_ppm_image(arg), //TODO regex
+            "--text" => image = read_ppm_image(&character_set_ppm_path), //TODO no scaling
+            _ => (),
+        }
+    }
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------
     for arg in args.iter() {
@@ -112,16 +130,9 @@ pub fn main() {
             "--mirror=vertical" => image.mirror_vertical(),
             "--mirror=horizontal" => image.mirror_horizontal(),
             "--g" => image.gamma_correction(),
-
             _ => (),
         }
     }
-
-    //Image::show_image(&image); // requires sdl2 import (but takes long to build)
-    // ------------------------------------ INIT CHARSET ------------------------------------
-    let mut character_set_regular = Charset::new();
-    character_set_regular.init_map();
-    character_set_regular.get_item(String::from("A"));
 
     // ------------------------------------ INIT GPIO ------------------------------------
     let mut io = GPIO::new(1); //Slowdown = 2 mag je mee spelen

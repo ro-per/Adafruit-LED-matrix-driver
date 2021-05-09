@@ -152,28 +152,6 @@ impl Image {
         };
         image
     }
-    pub fn transponate_image(&mut self) {
-        // save old matrix
-        let w = self.width;
-        let h = self.height;
-        let pixels_old = self.pixels.clone();
-
-        // build new image
-        let mut image = Image {
-            width: h,
-            height: w,
-            pixels: vec![],
-        };
-
-        for x in 0..image.height {
-            let mut row = Vec::new();
-            for y in 0..image.width {
-                let pixel = pixels_old[x][y];
-                row.push(pixel);
-            }
-            image.pixels.push(row);
-        }
-    }
 
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>) -> Result<usize, std::io::Error> {

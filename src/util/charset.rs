@@ -19,7 +19,6 @@ pub struct Charset {
 impl Charset {
     // ==================================== CONSTRUCTOR =======================================
     pub fn new(bold: bool) -> Charset {
-        // TODO pass name argument
         let path = "ppm/octafont.ppm".to_string();
         let char_map: Charset = Charset {
             bold: bold,
@@ -32,21 +31,19 @@ impl Charset {
         self.bold = b;
     }
     pub fn get_text(&self, text: String) -> Image {
-        //let mut image: Image; //TODO
-
         let mut text_matrix = Vec::new();
 
         // ------------------------------ LOOP OVER EACH LITERAL ------------------------------
         for (index, lit) in text.chars().enumerate() {
             //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
-            let row_start = 0;
-            let row_stop = 10;
+            let row_start = 9;
+            let row_stop = 18;
             let h = row_stop - row_start;
             assert!(h > 0, "negative height");
 
-            let col_start = 0;
-            let col_stop = 20;
+            let col_start = 90;
+            let col_stop = 96;
             let w = col_stop - col_start;
             assert!(w > 0, "negative width");
 
@@ -66,14 +63,23 @@ impl Charset {
                 text_matrix.push(column);
             }
         }
-
-        // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
-        let mut image = Image::new(text_matrix);
         // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
-        //image.transponate_image(); FIXME
+        let text_matrix_transpose = matrix_transpose(text_matrix);
+        // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
+        let image = Image::new(text_matrix_transpose);
         // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
-        image.print_to_console();
+        //image.print_to_console();
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
+}
+
+fn matrix_transpose(m: Vec<Vec<Pixel>>) -> Vec<Vec<Pixel>> {
+    let mut t = vec![Vec::with_capacity(m.len()); m[0].len()];
+    for r in m {
+        for i in 0..r.len() {
+            t[i].push(r[i]);
+        }
+    }
+    t
 }

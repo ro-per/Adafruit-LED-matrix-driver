@@ -4,6 +4,7 @@ use super::pixel::Pixel;
 
 // ==================================== IMPORTS =======================================
 use std::collections::HashMap;
+use std::ops::Range;
 use std::str;
 
 // ===========================================================================
@@ -13,7 +14,7 @@ use std::str;
 pub struct Charset {
     bold: bool,
     ppm_charset: Image,
-    pixel_map: HashMap<String, Vec<usize>>,
+    pixel_map: HashMap<char, Vec<usize>>,
 }
 
 impl Charset {
@@ -38,21 +39,31 @@ impl Charset {
         for (index, lit) in text.chars().enumerate() {
             //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
-            let row_start = 9;
-            let row_stop = 18;
-            let h = row_stop - row_start;
-            assert!(h > 0, "negative height");
-
-            let col_start = 90;
-            let col_stop = 96;
-            let w = col_stop - col_start;
-            assert!(w > 0, "negative width");
+            //FIXME get range dynamically
+            //ROWS
+            let a = 0;
+            let b = 9;
+            //COLS
+            let x;
+            let y;
+            let temp = self.pixel_map.get(&lit);
+            match temp {
+                // The division was valid
+                Some(vec) => {
+                    println!("Result: {} {}", vec[0], vec[1]);
+                    x = vec[0];
+                    y = vec[1];
+                }
+                // The division was invalid
+                None => panic!("No col range found !"),
+            }
+            //let Some(col_vec) = self.pixel_map.get_key_value(&lit);
 
             // ------------------------------ LOOP CHARACTERSET FOR GIVEN RANGE ------------------------------
-            for col in col_start..col_stop {
+            for col in x..y {
                 let mut column = Vec::new();
-                for row in row_start..row_stop {
-                    let pix = &self.ppm_charset.pixels[row][col];
+                for row in a..b {
+                    let pix = self.ppm_charset.pixels[row][col];
 
                     let pixel = Pixel {
                         r: pix.r,
@@ -73,12 +84,15 @@ impl Charset {
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
-    fn init_pixel_map(&mut self) {}
 }
-fn init_pixel_map() -> HashMap<String, Vec<usize>> {
+// ==================================== GENERAL FUNCTIONS =======================================
+fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     let mut mapping = HashMap::new();
 
-    mapping
+    mapping.insert('0', vec![90, 96]);
+    mapping.insert('1', vec![96, 102]);
+
+    return mapping;
 }
 
 fn matrix_transpose(m: Vec<Vec<Pixel>>) -> Vec<Vec<Pixel>> {

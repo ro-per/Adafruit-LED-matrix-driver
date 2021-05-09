@@ -90,7 +90,7 @@ pub fn main() {
 
     // ------------------------------------ INIT CHARSET ------------------------------------
     let character_set_regular = Charset::new(false);
-    let mut text_image = character_set_regular.get_text(String::from("ABC"));
+    let mut text_image = character_set_regular.get_text(String::from("01011"));
     text_image.print_to_console(); //FIXME print
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------

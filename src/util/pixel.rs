@@ -37,8 +37,28 @@ impl Pixel {
 		self.g = 255 - self.g;
 		self.b = 255 - self.b;
 	}
-	pub fn to_console(&self) {
-		println!("Pixel: R{} G{} B{}", self.r, self.g, self.b);
+	pub fn print_to_console(&self) {
+		print!("R{}G{}B{}", self.r, self.g, self.b);
+	}
+	pub fn get_primary_color_string(&self) -> String {
+		let red = self.r > 254;
+		let green = self.g > 254;
+		let blue = self.b > 254;
+		let white = red & green & blue;
+		let message: String;
+		if white {
+			message = " ".to_string();
+		} else if red {
+			message = "R".to_string();
+		} else if green {
+			message = "G".to_string();
+		} else if blue {
+			message = "B".to_string();
+		} else {
+			message = "X".to_string();
+		}
+		//eprint!("{}", message);
+		message
 	}
 
 	pub fn gamma_correction(&mut self) {

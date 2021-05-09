@@ -67,8 +67,8 @@ macro_rules! GPIO_BIT {
         1 << $bit
     };
 }
-pub fn read_ppm_image(image_path: &String) -> Image {
-    eprintln!("Image path = {}", image_path);
+pub fn read_ppm_image(image_path: &String, scaling: bool) -> Image {
+    //eprintln!("Image path = {}", image_path);
     let path = Path::new(&image_path);
     let display = path.display();
 
@@ -83,7 +83,8 @@ pub fn read_ppm_image(image_path: &String) -> Image {
 
     // construct a cursor so we can seek in the raw buffer
     let mut cursor = Cursor::new(raw_file);
-    let mut image = match Image::decode_ppm_image(&mut cursor) {
+    let mut image = match Image::decode_ppm_image(&mut cursor, scaling) {
+        //TODO edit boolean
         Ok(img) => img,
         Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
     };
@@ -113,14 +114,16 @@ pub fn main() {
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
     let character_set_ppm_path = String::from("ppm/octafont.ppm");
     let default_image_path = String::from("ppm/kuleuven_logo.ppm");
-    let mut image = read_ppm_image(&default_image_path);
+    eprintln!("READ IN KULEUVEN_LOGO.PPM AS STANDARD IMAGE");
+    let mut image = read_ppm_image(&default_image_path, true);
     for arg in args.iter() {
         match arg.as_str() {
-            "*ppm" => image = read_ppm_image(arg), //TODO regex
-            "--text" => image = read_ppm_image(&character_set_ppm_path), //TODO no scaling
+            "*ppm" => image = read_ppm_image(arg, true), //TODO regex
+            "--text" => image = read_ppm_image(&character_set_ppm_path, false),
             _ => (),
         }
     }
+    image.print_to_console();
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------
     for arg in args.iter() {

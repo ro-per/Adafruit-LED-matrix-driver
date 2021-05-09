@@ -66,13 +66,12 @@ impl Charset {
                 text_matrix.push(column);
             }
         }
-        // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
-        //todo
+
         // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
-        //todo
-        // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
         let mut image = Image::new(text_matrix);
-        //text_matrix
+        // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
+        //image.transponate_image(); FIXME
+        // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
         image.print_to_console();
         image
     }

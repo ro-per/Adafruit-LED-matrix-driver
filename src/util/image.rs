@@ -10,7 +10,7 @@ use std::io::{Cursor, Read, Seek, SeekFrom};
 // REPRESENTATION OF THE 'RAW' IMAGE
 // ===========================================================================
 pub struct Image {
-    // TODO: SHOULD NOT BE PRIVATE
+    // FIXME Romeo: SHOULD NOT BE PRIVATE
     pub width: usize,  // 32
     pub height: usize, //16
     pub pixels: Vec<Vec<Pixel>>,
@@ -218,7 +218,7 @@ impl Image {
         );
 
         for i in 0..new_height {
-            let mut pixel_row = Vec::new(); //TODO Nick init met alles zwart
+            let mut pixel_row = Vec::new(); //FIXME Nick init met alles zwart
 
             for j in 0..new_width {
                 let gy = i as f64 / new_height as f64 * (image.height - 1) as f64;

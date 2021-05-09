@@ -90,8 +90,9 @@ pub fn main() {
 
     // ------------------------------------ INIT CHARSET ------------------------------------
     let character_set_regular = Charset::new(false);
-    let mut text_image = character_set_regular.get_text(String::from("01011"));
-    text_image.print_to_console(); //FIXME print
+    let text = String::from("0");
+    let mut text_image = character_set_regular.get_text(text);
+    text_image.print_to_console();
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------
     for arg in args.iter() {
@@ -114,7 +115,7 @@ pub fn main() {
     // ------------------------------------ INIT FRAME ------------------------------------
     let mut frame = Frame::new();
     //Image inladen in het frame
-    frame.next_image_frame(&image); //TODO CEDRIC (mag wss weg)
+    frame.next_image_frame(&image); //FIXME CEDRIC (mag wss weg)
                                     //Clock starten
     let mut begin = time::get_time();
     let mut current_time: Timespec;

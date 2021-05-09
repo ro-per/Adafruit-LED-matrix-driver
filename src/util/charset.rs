@@ -39,10 +39,9 @@ impl Charset {
         for (index, lit) in text.chars().enumerate() {
             //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
-            //FIXME get range dynamically
             //ROWS
-            let a = 0;
-            let b = 9;
+            let a = 9; //TODO change to 10
+            let b = 17;
             //COLS
             let x;
             let y;
@@ -73,6 +72,7 @@ impl Charset {
                     column.push(pixel);
                 }
                 text_matrix.push(column);
+                //TODO add space between chars
             }
         }
         // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
@@ -87,10 +87,13 @@ impl Charset {
 }
 // ==================================== GENERAL FUNCTIONS =======================================
 fn init_pixel_map() -> HashMap<char, Vec<usize>> {
+    //FIXME bold mapping
     let mut mapping = HashMap::new();
 
-    mapping.insert('0', vec![90, 96]);
-    mapping.insert('1', vec![96, 102]);
+    //TODO add remaining mapping in thin !!
+
+    mapping.insert('0', vec![91, 95]);
+    mapping.insert('1', vec![98, 100]);
 
     return mapping;
 }

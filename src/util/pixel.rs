@@ -7,7 +7,7 @@
 // ===========================================================================
 #[derive(Copy, Clone)]
 pub struct Pixel {
-    // TODO: SHOULD NOT BE PRIVATE
+    // FIXME Romeo: SHOULD NOT BE PRIVATE
     pub r: u8,
     pub g: u8,
     pub b: u8,
@@ -47,7 +47,7 @@ impl Pixel {
         let white = red & green & blue;
         let message: String;
         if white {
-            message = "W".to_string();
+            message = ".".to_string();
         } else if red {
             message = "R".to_string();
         } else if green {
@@ -55,7 +55,7 @@ impl Pixel {
         } else if blue {
             message = "B".to_string();
         } else {
-            message = " ".to_string();
+            message = "*".to_string();
         }
         //eprint!("{}", message);
         message

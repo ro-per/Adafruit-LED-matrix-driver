@@ -13,7 +13,7 @@ use std::str;
 pub struct Charset {
     bold: bool,
     ppm_charset: Image,
-    //pub map: HashMap<String, usize>, //TODO mapping position
+    pixel_map: HashMap<String, Vec<usize>>,
 }
 
 impl Charset {
@@ -23,6 +23,7 @@ impl Charset {
         let char_map: Charset = Charset {
             bold: bold,
             ppm_charset: Image::read_ppm_image(&path, false), //map: HashMap::new(),
+            pixel_map: init_pixel_map(),
         };
         char_map
     }
@@ -72,6 +73,12 @@ impl Charset {
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
+    fn init_pixel_map(&mut self) {}
+}
+fn init_pixel_map() -> HashMap<String, Vec<usize>> {
+    let mut mapping = HashMap::new();
+
+    mapping
 }
 
 fn matrix_transpose(m: Vec<Vec<Pixel>>) -> Vec<Vec<Pixel>> {

@@ -76,7 +76,7 @@ impl Image {
             }
             image.pixels.push(row);
         }
-
+        println!("W{} H{} ", image.width, image.height);
         println!("{} Decoding done !", parent_method);
         if scaling {
             let y_scale = ROWS as f64 / image.height as f64;

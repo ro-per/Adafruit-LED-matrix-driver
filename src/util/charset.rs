@@ -144,7 +144,32 @@ fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     mapping.insert('9', vec![148, 152]);
 
     // Letters (ALL UPPERCASE)
-
+    mapping.insert('a', vec![191, 196]);
+    mapping.insert('b', vec![199, 203]);
+    mapping.insert('c', vec![206, 210]);
+    mapping.insert('d', vec![212, 216]);
+    mapping.insert('e', vec![218, 222]);
+    mapping.insert('f', vec![224, 228]);
+    mapping.insert('g', vec![230, 234]);
+    mapping.insert('h', vec![236, 240]);
+    mapping.insert('i', vec![243, 244]);
+    mapping.insert('j', vec![246, 250]);
+    mapping.insert('k', vec![252, 257]);
+    mapping.insert('l', vec![259, 263]);
+    mapping.insert('m', vec![265, 270]);
+    mapping.insert('n', vec![273, 278]);
+    mapping.insert('o', vec![281, 285]);
+    mapping.insert('p', vec![288, 292]);
+    // mapping.insert('q', vec![,]);
+    // mapping.insert('r', vec![,]);
+    // mapping.insert('s', vec![,]);
+    // mapping.insert('t', vec![,]);
+    // mapping.insert('u', vec![,]);
+    // mapping.insert('v', vec![,]);
+    // mapping.insert('w', vec![,]);
+    // mapping.insert('x', vec![,]);
+    // mapping.insert('y', vec![,]);
+    // mapping.insert('z', vec![,]);
     //FIXME Romeo
 
     return mapping;

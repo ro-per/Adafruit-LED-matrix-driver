@@ -77,7 +77,6 @@ impl Charset {
                     column.push(pixel);
                 }
                 text_matrix.push(column);
-                //BUG add space between chars
             }
         }
         // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
@@ -92,12 +91,12 @@ impl Charset {
 }
 // ==================================== GENERAL FUNCTIONS =======================================
 fn init_pixel_map() -> HashMap<char, Vec<usize>> {
-    //FIXME bold mapping
+    //FIXME Romeo bold mapping
     let mut mapping = HashMap::new();
 
-    //TODO add remaining mapping in thin !!
-    mapping.insert(' ', vec![0, 3]);
+    mapping.insert(' ', vec![0, 3]); //FIXME Romeo add space
 
+    //Symbols
     mapping.insert('!', vec![1, 2]);
     mapping.insert('"', vec![4, 7]);
     mapping.insert('#', vec![10, 16]);
@@ -107,16 +106,46 @@ fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     mapping.insert('\'', vec![47, 48]);
     mapping.insert('(', vec![50, 53]);
     mapping.insert(')', vec![55, 58]);
-
     mapping.insert('*', vec![60, 65]);
     mapping.insert('+', vec![68, 73]);
     mapping.insert(',', vec![75, 77]);
     mapping.insert('-', vec![78, 81]);
     mapping.insert('.', vec![82, 83]);
     mapping.insert('/', vec![85, 90]);
+    mapping.insert(':', vec![154, 155]);
+    mapping.insert(';', vec![157, 159]);
+    mapping.insert('<', vec![161, 165]);
+    mapping.insert('=', vec![166, 170]);
+    mapping.insert('>', vec![171, 175]);
+    mapping.insert('?', vec![176, 180]);
+    mapping.insert('@', vec![182, 188]);
+    mapping.insert('[', vec![370, 372]);
+    mapping.insert('\\', vec![374, 379]);
+    mapping.insert(']', vec![380, 382]);
+    mapping.insert('^', vec![384, 389]);
+    mapping.insert('_', vec![390, 395]);
+    mapping.insert('`', vec![396, 398]);
+    mapping.insert('{', vec![549, 552]);
+    mapping.insert('|', vec![554, 555]);
+    mapping.insert('}', vec![556, 559]);
+    mapping.insert('~', vec![561, 565]);
+    mapping.insert('€', vec![614, 619]);
 
+    // Numbers
     mapping.insert('0', vec![91, 95]);
     mapping.insert('1', vec![98, 100]);
+    mapping.insert('2', vec![102, 106]);
+    mapping.insert('3', vec![109, 113]);
+    mapping.insert('4', vec![115, 120]);
+    mapping.insert('5', vec![122, 126]);
+    mapping.insert('6', vec![128, 132]);
+    mapping.insert('7', vec![134, 139]);
+    mapping.insert('8', vec![141, 145]);
+    mapping.insert('9', vec![148, 152]);
+
+    // Letters (ALL UPPERCASE)
+
+    //FIXME Romeo
 
     return mapping;
 }

@@ -89,7 +89,7 @@ pub fn main() {
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
     // ------------------------------------ INIT CHARSET ------------------------------------
-    let character_set_regular = Charset::new(false);
+    let character_set_regular = Charset::new();
     let text = String::from(&args[2]);
     let mut text_image = character_set_regular.get_text(text);
     text_image.print_to_console();

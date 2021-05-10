@@ -12,17 +12,15 @@ use std::str;
 // ===========================================================================
 
 pub struct Charset {
-    bold: bool,
     pub ppm_charset: Image,
     pixel_map: HashMap<char, Vec<usize>>,
 }
 
 impl Charset {
     // ==================================== CONSTRUCTOR =======================================
-    pub fn new(bold: bool) -> Charset {
+    pub fn new() -> Charset {
         let path = "ppm/octafont.ppm".to_string();
         let char_map: Charset = Charset {
-            bold: bold,
             ppm_charset: Image::read_ppm_image(&path, false), //map: HashMap::new(),
             pixel_map: init_pixel_map(),
         };
@@ -32,9 +30,6 @@ impl Charset {
     pub fn show_char_set(&mut self) {
         self.ppm_charset.print_to_console();
     }
-    pub fn set_bold(&mut self, b: bool) {
-        self.bold = b;
-    }
     pub fn get_text(&self, text: String) -> Image {
         let mut text_matrix = Vec::new();
 
@@ -43,7 +38,7 @@ impl Charset {
             //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
             //ROWS
-            let a = 9; //TODO change to 10
+            let a = 10;
             let b = 17;
             //COLS
             let x;
@@ -64,7 +59,6 @@ impl Charset {
             // ------------------------------ LOOP CHARACTERSET FOR GIVEN RANGE ------------------------------
             // for col in 0..620 {
             for col in x..y {
-                //BUG
                 let mut column = Vec::new();
                 for row in a..b {
                     let pix = self.ppm_charset.pixels[row][col];
@@ -91,7 +85,6 @@ impl Charset {
 }
 // ==================================== GENERAL FUNCTIONS =======================================
 fn init_pixel_map() -> HashMap<char, Vec<usize>> {
-    //FIXME Romeo bold mapping
     let mut mapping = HashMap::new();
 
     mapping.insert(' ', vec![0, 3]); //FIXME Romeo add space
@@ -160,17 +153,16 @@ fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     mapping.insert('n', vec![273, 278]);
     mapping.insert('o', vec![281, 285]);
     mapping.insert('p', vec![288, 292]);
-    // mapping.insert('q', vec![,]);
-    // mapping.insert('r', vec![,]);
-    // mapping.insert('s', vec![,]);
-    // mapping.insert('t', vec![,]);
-    // mapping.insert('u', vec![,]);
-    // mapping.insert('v', vec![,]);
-    // mapping.insert('w', vec![,]);
-    // mapping.insert('x', vec![,]);
-    // mapping.insert('y', vec![,]);
-    // mapping.insert('z', vec![,]);
-    //FIXME Romeo
+    mapping.insert('q', vec![295, 301]);
+    mapping.insert('r', vec![303, 307]);
+    mapping.insert('s', vec![310, 314]);
+    mapping.insert('t', vec![317, 322]);
+    mapping.insert('u', vec![324, 328]);
+    mapping.insert('v', vec![331, 336]);
+    mapping.insert('w', vec![339, 346]);
+    mapping.insert('x', vec![348, 353]);
+    mapping.insert('y', vec![356, 361]);
+    mapping.insert('z', vec![363, 368]);
 
     return mapping;
 }

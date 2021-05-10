@@ -101,7 +101,7 @@ pub fn main() {
         let mut contents = String::new();
         file.read_to_string(&mut contents)
             .expect("Unable to read the file");
-        text = String::from(contents);
+        text = String::from(contents); // FIXME Romeo: remove tabs and newlines !!!
         let character_set_regular = Charset::new();
         image = character_set_regular.get_text(text, true); // True means random RGB value per letter
     }

@@ -84,26 +84,38 @@ pub fn main() {
         eprintln!("Syntax: {:?} [image]", args[0]);
         // std::process::exit(1);
     }
+    let mut image: Image;
+    // ------------------------------------ CHECK FOR TEXT ------------------------------------
+    let mut text_bool: bool = false;
+    let mut text: String = String::from("");
+    for arg in args.iter() {
+        match arg.as_str() {
+            "--text" => text_bool = true,
+            _ => text_bool = false,
+        }
+    }
+    // ------------------------------------ GET TEXT FROM CHARSET ------------------------------------
 
+    if text_bool {
+        let mut file = File::open(&args[1]).expect("Unable to open the file");
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .expect("Unable to read the file");
+        text = String::from(contents);
+        let character_set_regular = Charset::new();
+        image = character_set_regular.get_text(text, true); // True means random RGB value per letter
+    }
     // ------------------------------------ PPM PARSER (paht in args[1]) ------------------------------------
-    let mut image = Image::read_ppm_image(&args[1], true);
-    //image.print_to_console();
+    else {
+        image = Image::read_ppm_image(&args[1], true);
+    }
+    // ------------------------------------ SHOW IM ON CONSOLE ------------------------------------
+
+    image.print_to_console();
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
-    // ------------------------------------ INIT CHARSET ------------------------------------
-    let character_set_regular = Charset::new();
-
-    // ------------------------------------ GET TEXT ------------------------------------
-    let mut file = File::open(&args[2]).expect("Unable to open the file");
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .expect("Unable to read the file");
-
-    let text = String::from(contents); //FIXME Romeo read from file
-    let mut text_image = character_set_regular.get_text(text, true); // True means random RGB value per letter
-    text_image.print_to_console();
-
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------
+
     for arg in args.iter() {
         match arg.as_str() {
             "--colors=grey" => image.to_grey_scale(),

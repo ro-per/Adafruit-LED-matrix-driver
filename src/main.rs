@@ -90,7 +90,7 @@ pub fn main() {
 
     // ------------------------------------ INIT CHARSET ------------------------------------
     let character_set_regular = Charset::new();
-    let text = String::from(&args[2]);
+    let text = String::from(&args[2]); //FIXME Romeo read from file
     let mut text_image = character_set_regular.get_text(text);
     text_image.print_to_console();
 

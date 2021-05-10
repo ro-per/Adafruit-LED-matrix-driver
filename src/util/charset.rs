@@ -4,8 +4,6 @@ use super::pixel::Pixel;
 
 // ==================================== IMPORTS =======================================
 use std::collections::HashMap;
-use std::ops::Range;
-use std::str;
 
 // ===========================================================================
 // This is a representation of the frame we're currently rendering
@@ -32,9 +30,10 @@ impl Charset {
     }
     pub fn get_text(&self, text: String) -> Image {
         let mut text_matrix = Vec::new();
+        let text_lower = text.to_ascii_lowercase();
 
         // ------------------------------ LOOP OVER EACH LITERAL ------------------------------
-        for (index, lit) in text.chars().enumerate() {
+        for (_index, lit) in text_lower.chars().enumerate() {
             //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
             //ROWS

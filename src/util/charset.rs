@@ -13,7 +13,7 @@ use std::str;
 
 pub struct Charset {
     bold: bool,
-    ppm_charset: Image,
+    pub ppm_charset: Image,
     pixel_map: HashMap<char, Vec<usize>>,
 }
 
@@ -29,6 +29,9 @@ impl Charset {
         char_map
     }
     // ==================================== PUBLIC FUNCTIONS =======================================
+    pub fn show_char_set(&mut self) {
+        self.ppm_charset.print_to_console();
+    }
     pub fn set_bold(&mut self, b: bool) {
         self.bold = b;
     }
@@ -54,12 +57,14 @@ impl Charset {
                     y = vec[1];
                 }
                 // The division was invalid
-                None => panic!("No col range found !"),
+                None => panic!("Character ```{}``` not available!", &lit), //FIXME just show whitesapce ???
             }
             //let Some(col_vec) = self.pixel_map.get_key_value(&lit);
 
             // ------------------------------ LOOP CHARACTERSET FOR GIVEN RANGE ------------------------------
+            // for col in 0..620 {
             for col in x..y {
+                //BUG
                 let mut column = Vec::new();
                 for row in a..b {
                     let pix = self.ppm_charset.pixels[row][col];
@@ -72,7 +77,7 @@ impl Charset {
                     column.push(pixel);
                 }
                 text_matrix.push(column);
-                //TODO add space between chars
+                //BUG add space between chars
             }
         }
         // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
@@ -91,6 +96,24 @@ fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     let mut mapping = HashMap::new();
 
     //TODO add remaining mapping in thin !!
+    mapping.insert(' ', vec![0, 3]);
+
+    mapping.insert('!', vec![1, 2]);
+    mapping.insert('"', vec![4, 7]);
+    mapping.insert('#', vec![10, 16]);
+    mapping.insert('$', vec![19, 24]);
+    mapping.insert('%', vec![28, 37]);
+    mapping.insert('&', vec![40, 45]);
+    mapping.insert('\'', vec![47, 48]);
+    mapping.insert('(', vec![50, 53]);
+    mapping.insert(')', vec![55, 58]);
+
+    mapping.insert('*', vec![60, 65]);
+    mapping.insert('+', vec![68, 73]);
+    mapping.insert(',', vec![75, 77]);
+    mapping.insert('-', vec![78, 81]);
+    mapping.insert('.', vec![82, 83]);
+    mapping.insert('/', vec![85, 90]);
 
     mapping.insert('0', vec![91, 95]);
     mapping.insert('1', vec![98, 100]);

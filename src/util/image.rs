@@ -59,7 +59,6 @@ impl Image {
         /* eventuele whitespaces na eerste lijn */
         Image::consume_whitespaces(cursor)?;
         /* body inlezen */
-
         for _ in 0..image.height {
             let mut row = Vec::new();
             for _ in 0..image.width {
@@ -122,11 +121,21 @@ impl Image {
             parent_method, self.width, self.height
         );
         let mut print: String = "".to_string();
+
+        // BUG
+        let space = "";
+        for x in 0..self.width {
+            let temp = x.to_string();
+            print += &temp;
+            print += space; //BUG
+        }
+        print += "\n";
         for col in 0..self.height {
             for row in 0..self.width {
                 let pixel = &self.pixels[col][row];
 
                 print += &pixel.get_primary_color_string();
+                print += space; //BUG
             }
             print += "\n";
         }

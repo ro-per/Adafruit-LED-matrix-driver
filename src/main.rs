@@ -90,7 +90,7 @@ pub fn main() {
 
     // ------------------------------------ INIT CHARSET ------------------------------------
     let character_set_regular = Charset::new(false);
-    let text = String::from("0");
+    let text = String::from(&args[2]);
     let mut text_image = character_set_regular.get_text(text);
     text_image.print_to_console();
 

@@ -46,8 +46,9 @@ impl Pixel {
         let blue = self.b > 254;
         let white = red & green & blue;
         let message: String;
+
         if white {
-            message = ".".to_string();
+            message = " ".to_string();
         } else if red {
             message = "R".to_string();
         } else if green {
@@ -55,7 +56,7 @@ impl Pixel {
         } else if blue {
             message = "B".to_string();
         } else {
-            message = "*".to_string();
+            message = "x".to_string();
         }
         //eprint!("{}", message);
         message

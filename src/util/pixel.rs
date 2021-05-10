@@ -48,7 +48,7 @@ impl Pixel {
         let message: String;
 
         if white {
-            message = " ".to_string();
+            message = "o".to_string();
         } else if red {
             message = "R".to_string();
         } else if green {
@@ -56,10 +56,22 @@ impl Pixel {
         } else if blue {
             message = "B".to_string();
         } else {
-            message = "x".to_string();
+            message = " ".to_string();
         }
         //eprint!("{}", message);
         message
+    }
+    pub fn set_color(&mut self, p: Pixel) {
+        self.r = p.r;
+        self.g = p.g;
+        self.b = p.b;
+    }
+    pub fn is_white(&self) -> bool {
+        let red = self.r > 254;
+        let green = self.g > 254;
+        let blue = self.b > 254;
+        let white = red & green & blue;
+        white
     }
 
     pub fn gamma_correction(&mut self) {

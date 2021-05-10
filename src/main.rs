@@ -21,11 +21,11 @@ extern crate shuteye;
 
 // ==================================== USE =======================================
 use std::fs::File;
+use std::io::prelude::*;
 use std::io::{Cursor, Error, ErrorKind, Read, Seek, SeekFrom};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 use time::Timespec;
-
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
 
@@ -59,6 +59,8 @@ const TIMER_OVERFLOW: u32 = 4294967295;
 const COLUMNS: usize = 32;
 const ROWS: usize = 16;
 
+const NUMBER_SPACES: usize = 1;
+
 // MACRO FOR CREATING BITMASKS
 type gpio_bits_t = u32;
 macro_rules! GPIO_BIT {
@@ -90,8 +92,15 @@ pub fn main() {
 
     // ------------------------------------ INIT CHARSET ------------------------------------
     let character_set_regular = Charset::new();
-    let text = String::from(&args[2]); //FIXME Romeo read from file
-    let mut text_image = character_set_regular.get_text(text);
+
+    // ------------------------------------ GET TEXT ------------------------------------
+    let mut file = File::open(&args[2]).expect("Unable to open the file");
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)
+        .expect("Unable to read the file");
+
+    let text = String::from(contents); //FIXME Romeo read from file
+    let mut text_image = character_set_regular.get_text(text, true); // True means random RGB value per letter
     text_image.print_to_console();
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------

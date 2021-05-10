@@ -1,8 +1,10 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::image::Image;
 use super::pixel::Pixel;
+use crate::NUMBER_SPACES;
 
 // ==================================== IMPORTS =======================================
+use rand::prelude::*;
 use std::collections::HashMap;
 
 // ===========================================================================
@@ -28,7 +30,8 @@ impl Charset {
     pub fn show_char_set(&mut self) {
         self.ppm_charset.print_to_console();
     }
-    pub fn get_text(&self, text: String) -> Image {
+    pub fn get_text(&self, text: String, random_rgb: bool) -> Image {
+        let mut rand_gen = rand::thread_rng();
         let mut text_matrix = Vec::new();
         let text_lower = text.to_ascii_lowercase();
 
@@ -44,32 +47,61 @@ impl Charset {
             let y;
             let temp = self.pixel_map.get(&lit);
             match temp {
-                // The division was valid
                 Some(vec) => {
-                    println!("Result: {} {}", vec[0], vec[1]);
+                    // println!("Result: {} {}", vec[0], vec[1]);
                     x = vec[0];
                     y = vec[1];
                 }
-                // The division was invalid
-                None => panic!("Character ```{}``` not available!", &lit), //FIXME just show whitesapce ???
+                None => panic!("Character ```{}``` not available!", &lit),
             }
-            //let Some(col_vec) = self.pixel_map.get_key_value(&lit);
 
             // ------------------------------ LOOP CHARACTERSET FOR GIVEN RANGE ------------------------------
-            // for col in 0..620 {
-            for col in x..y {
-                let mut column = Vec::new();
-                for row in a..b {
-                    let pix = self.ppm_charset.pixels[row][col];
-
-                    let pixel = Pixel {
-                        r: pix.r,
-                        g: pix.g,
-                        b: pix.b,
-                    };
-                    column.push(pixel);
+            let space_x: bool = x == 0;
+            let space_y: bool = y == 0;
+            if space_x & space_y {
+                for _ in 0..NUMBER_SPACES {
+                    let mut column = Vec::new();
+                    for _ in a..b {
+                        let pixel = Pixel { r: 0, g: 0, b: 0 };
+                        column.push(pixel);
+                    }
+                    text_matrix.push(column);
                 }
-                text_matrix.push(column);
+            } else {
+                let mut p = Pixel {
+                    r: 255,
+                    g: 255,
+                    b: 255,
+                };
+                if random_rgb {
+                    let x: f64 = rand_gen.gen();
+                    if x < 0.33 {
+                        p = Pixel { r: 255, g: 0, b: 0 };
+                    } else if x > 0.66 {
+                        p = Pixel { r: 0, g: 255, b: 0 };
+                    } else {
+                        p = Pixel { r: 0, g: 0, b: 255 };
+                    }
+                }
+                for col in x..y {
+                    let mut column = Vec::new();
+                    for row in a..b {
+                        let pix = self.ppm_charset.pixels[row][col];
+
+                        let mut pixel = Pixel {
+                            r: pix.r,
+                            g: pix.g,
+                            b: pix.b,
+                        };
+                        pixel.invert_colors();
+                        if pixel.is_white() {
+                            pixel.set_color(p);
+                        }
+
+                        column.push(pixel);
+                    }
+                    text_matrix.push(column);
+                }
             }
         }
         // ------------------------------ TRANSPONATE FROM col<row<pixel>> tot row<col<pixel>> ------------------------------
@@ -86,7 +118,7 @@ impl Charset {
 fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     let mut mapping = HashMap::new();
 
-    mapping.insert(' ', vec![0, 3]); //FIXME Romeo add space
+    mapping.insert(' ', vec![0, 0]);
 
     //Symbols
     mapping.insert('!', vec![1, 2]);

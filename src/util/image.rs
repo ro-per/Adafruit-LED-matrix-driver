@@ -217,6 +217,7 @@ impl Image {
             "Scaling: {}x{} -> {}x{}",
             image.height, image.width, new_height, new_width
         );
+        let diff: usize = COLUMNS - (new_width as usize);
 
         for i in 0..new_height {
             let mut pixel_row = Vec::new(); //FIXME Nick init met alles zwart
@@ -261,6 +262,12 @@ impl Image {
                 let pixel = Pixel { r: r, g: g, b: b };
                 pixel_row.push(pixel.clone());
             }
+
+            for _ in new_width..COLUMNS as u32 {
+                let pixel = Pixel { r: 0, g: 0, b: 0 };
+                pixel_row.push(pixel.clone());
+            }
+
             pixels.push(pixel_row.clone());
         }
 

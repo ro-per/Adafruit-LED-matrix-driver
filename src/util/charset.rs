@@ -101,7 +101,7 @@ impl Charset {
 
                         column.push(pixel);
                     }
-                    //BLACK PIX //TODO
+                    // BLACK PIX
                     for _ in 0..2 {
                         let pixel = Pixel { r: 0, g: 0, b: 0 };
                         column.push(pixel);

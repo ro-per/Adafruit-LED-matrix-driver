@@ -111,7 +111,7 @@ pub fn main() {
     }
     // ------------------------------------ SHOW IM ON CONSOLE ------------------------------------
 
-    image.print_to_console();
+    //image.print_to_console();
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 
     // ------------------------------------ CHECK FOR FEATURES ------------------------------------

@@ -217,7 +217,7 @@ impl Image {
             "Scaling: {}x{} -> {}x{}",
             image.height, image.width, new_height, new_width
         );
-        let diff: usize = COLUMNS - (new_width as usize);
+        //let diff: usize = COLUMNS - (new_width as usize);
 
         for i in 0..new_height {
             let mut pixel_row = Vec::new(); //FIXME Nick init met alles zwart

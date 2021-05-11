@@ -85,11 +85,11 @@ impl Charset {
                 }
                 for col in x..y {
                     let mut column = Vec::new();
-                    //BLACK PIX
-                    for _ in 0..4 {
+                    //BLACK PIX //TODO
+                    /* for _ in 0..4 {
                         let pixel = Pixel { r: 0, g: 0, b: 0 };
                         column.push(pixel);
-                    }
+                    } */
                     // ACTUAL TEXT
                     for row in a..b {
                         let pix = self.ppm_charset.pixels[row][col];
@@ -106,8 +106,8 @@ impl Charset {
 
                         column.push(pixel);
                     }
-                    //BLACK PIX
-                    for _ in 0..5 {
+                    //BLACK PIX //TODO
+                    for _ in 0..10 {
                         let pixel = Pixel { r: 0, g: 0, b: 0 };
                         column.push(pixel);
                     }
@@ -120,7 +120,7 @@ impl Charset {
         // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
         let image = Image::new(text_matrix_transpose);
         // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
-        //image.print_to_console();
+        //image.print_to_console(); //BUG Romeo
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================

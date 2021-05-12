@@ -73,44 +73,25 @@ macro_rules! GPIO_BIT {
 pub fn main() {
     let args: Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
-
-    // ------------------------------------ SANITY CHECKS ------------------------------------
-    if nix::unistd::Uid::current().is_root() == false {
-        eprintln!(
-            "Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command"
-        );
-        std::process::exit(1);
-    } else if args.len() < 2 {
-        eprintln!("Syntax: {:?} [image]", args[0]);
-        // std::process::exit(1);
-    }
     let mut image: Image;
-    // ------------------------------------ CHECK FOR TEXT ------------------------------------
-    let mut text_bool: bool = false;
-    let mut text: String = String::from("");
-    for arg in args.iter() {
-        match arg.as_str() {
-            "--text" => text_bool = true,
-            _ => text_bool = false,
-        }
-    }
-    // ------------------------------------ GET TEXT FROM CHARSET ------------------------------------
 
-    if text_bool {
-        let mut file = File::open(&args[1]).expect("Unable to open the file");
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)
-            .expect("Unable to read the file");
-        text = String::from(contents); // FIXME Romeo: remove tabs and newlines !!!
-        let character_set_regular = Charset::new();
-        image = character_set_regular.get_text(text, true); // True means random RGB value per letter
+    // ---- SANITY CHECKS ----
+    if nix::unistd::Uid::current().is_root() == false {
+        panic!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
+        std::process::exit(1);
+    } 
+    // ---- CHECK FOR INPUT FILES ----
+    else if args[1].contains(".ppm"){
+        image = Image::read_ppm_image(&args[1],true);
+    } else if args[1].contains(".txt"){
+        image = Image::read_txt_image(&args[1],false);
     }
-    // ------------------------------------ PPM PARSER (paht in args[1]) ------------------------------------
-    else {
-        image = Image::read_ppm_image(&args[1], true);
+    // ---- CHECK FOR INPUT FILES ----
+    else{
+        panic!("arg[1] bad format");
+        std::process::exit(1);
     }
-    // ------------------------------------ SHOW IM ON CONSOLE ------------------------------------
-
+    
     //image.print_to_console();
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 

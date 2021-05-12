@@ -147,13 +147,22 @@ impl Image {
         file.read_to_end(&mut raw_file).unwrap();
         // construct a cursor so we can seek in the raw buffer
         let mut cursor = Cursor::new(raw_file);
-        let image = match Image::decode_ppm_image(&mut cursor, scaling) {
+        let image = match Image::decode_ppm_image(&mut cursor, scaling) { 
             Ok(img) => img,
             Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
         };
         image
     }
-
+    pub fn read_txt_image(txt_path: &String, scaling: bool) -> Image {
+        let mut file = File::open(txt_path).expect("Unable to open the file");
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)
+            .expect("Unable to read the file");
+        let text = String::from(contents); // FIXME Romeo: remove tabs and newlines !!!
+        let character_set_regular = Charset::new();
+        let image = character_set_regular.get_text(text, true); // True means random RGB value per letter
+        image
+    }
     // ==================================== PRIVATE FUNCTIONS =======================================
     fn read_number(cursor: &mut Cursor<Vec<u8>>) -> Result<usize, std::io::Error> {
         let parent_method = "Image/read_number:";

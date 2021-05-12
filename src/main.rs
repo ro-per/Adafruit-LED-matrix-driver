@@ -77,7 +77,7 @@ pub fn main() {
 
     // ---- SANITY CHECKS ----
     if nix::unistd::Uid::current().is_root() == false {
-        panic!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
+        eprintln!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
         std::process::exit(1);
     } 
     // ---- CHECK FOR INPUT FILES ----
@@ -88,7 +88,7 @@ pub fn main() {
     }
     // ---- CHECK FOR INPUT FILES ----
     else{
-        panic!("arg[1] bad format");
+        eprintln!("arg[1] bad format");
         std::process::exit(1);
     }
     

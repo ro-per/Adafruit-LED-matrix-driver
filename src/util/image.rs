@@ -38,7 +38,7 @@ impl Image {
         scaling: bool,
     ) -> Result<Image, std::io::Error> {
         let parent_method = "Image/decode_ppm_image:";
-        println!("{} Decoding ppm image ...", parent_method);
+        if PTC {println!("{} Decoding ppm image ...", parent_method);}
         let mut image = Image {
             width: 0,
             height: 0,
@@ -49,7 +49,7 @@ impl Image {
         cursor.read(&mut header)?; // ? geeft error terug mee met result van de functie
         match &header {
             // & dient voor slice van te maken
-            b"P6" => println!("\t P6 image"), // b zorgt ervoor dat je byte string hebt (u8 slice)
+            b"P6" => (), // b zorgt ervoor dat je byte string hebt (u8 slice)
             _ => panic!("\t Not an P6 image"), //_ staat voor default branch
         }
         /* INLEZEN VAN BREEDTE EN HOOGTE */
@@ -75,8 +75,8 @@ impl Image {
             }
             image.pixels.push(row);
         }
-        println!("W{} H{} ", image.width, image.height);
-        println!("{} Decoding done !", parent_method);
+        if PTC {println!("W{} H{} ", image.width, image.height);}
+        if PTC {println!("{} Decoding done !", parent_method);}
         if scaling {
             let y_scale = ROWS as f64 / image.height as f64;
             let x_scale = y_scale;
@@ -116,10 +116,7 @@ impl Image {
     }
     pub fn print_to_console(&mut self) {
         let parent_method = "Image/print_to_console:";
-        println!(
-            "{} Printing image of size W{}xH{} ...",
-            parent_method, self.width, self.height
-        );
+        if PTC {println!("{} Printing image of size W{}xH{} ...",parent_method, self.width, self.height);}
         let mut print: String = "".to_string();
 
         print += "\n";
@@ -131,11 +128,13 @@ impl Image {
             }
             print += "\n";
         }
-        println!("{}", print);
-        println!("{} Printing done ...", parent_method);
+        if PTC {
+            println!("{}", print);
+            println!("{} Printing done ...", parent_method);}
+        
     }
     pub fn read_ppm_image(image_path: &String, scaling: bool) -> Image {
-        println!("Image path = {}", image_path);
+        if PTC {println!("Image path = {}", image_path);}
         let path = Path::new(&image_path);
         let display = path.display();
         let mut file = match File::open(&path) {
@@ -194,7 +193,7 @@ impl Image {
         loop {
             cursor.read(&mut buff)?;
             match buff[0] {
-                b' ' | b'\n' | b'\r' | b'\t' => println!("\t consumed 1 whitespace"),
+                b' ' | b'\n' | b'\r' | b'\t' => if PTC {println!("\t consumed 1 whitespace")} else{()},
                 _ => {
                     // je zit eigenlijk al te ver nu !!! zet cursor 1 terug
                     cursor.seek(SeekFrom::Current(-1))?;
@@ -222,10 +221,7 @@ impl Image {
         let new_width = (x_scale * image.width as f64) as u32;
         let new_height = (y_scale * image.height as f64) as u32;
 
-        println!(
-            "Scaling: {}x{} -> {}x{}",
-            image.height, image.width, new_height, new_width
-        );
+        if PTC{println!("Scaling: {}x{} -> {}x{}",image.height, image.width, new_height, new_width);}
         //let diff: usize = COLUMNS - (new_width as usize);
 
         for i in 0..new_height {

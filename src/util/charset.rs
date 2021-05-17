@@ -1,7 +1,7 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::image::Image;
 use super::pixel::Pixel;
-use crate::NUMBER_SPACES;
+use crate::{NUMBER_SPACES,PTC};
 
 // ==================================== IMPORTS =======================================
 use rand::prelude::*;
@@ -37,7 +37,6 @@ impl Charset {
 
         // ------------------------------ LOOP OVER EACH LITERAL ------------------------------
         for (_index, lit) in text_lower.chars().enumerate() {
-            //println!("index{}, literal{}", index, lit);
             // ------------------------------ GET PIXEL RANGE ------------------------------
             //ROWS
             let a = 10;
@@ -48,7 +47,6 @@ impl Charset {
             let temp = self.pixel_map.get(&lit);
             match temp {
                 Some(vec) => {
-                    // println!("Result: {} {}", vec[0], vec[1]);
                     x = vec[0];
                     y = vec[1];
                 }

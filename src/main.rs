@@ -60,6 +60,7 @@ const COLUMNS: usize = 32;
 const ROWS: usize = 16;
 
 const NUMBER_SPACES: usize = 1;
+const PTC:bool=false;
 
 // MACRO FOR CREATING BITMASKS
 type gpio_bits_t = u32;
@@ -75,6 +76,7 @@ pub fn main() {
     let interrupt_received = Arc::new(AtomicBool::new(false));
     let mut image: Image;
     let mut scrolling:bool=false;
+    let image_is_text:bool;
 
     // ---- SANITY CHECKS ----
     if nix::unistd::Uid::current().is_root() == false {
@@ -86,8 +88,10 @@ pub fn main() {
     // ---- CHECK FOR INPUT FILES ----
     else if args[1].contains(".ppm") {
         image = Image::read_ppm_image(&args[1], true);
+        image_is_text = false;
     } else if args[1].contains(".txt") {
         image = Image::read_txt_image(&args[1], false);
+        image_is_text=true;
     }
     // ---- CHECK FOR INPUT FILES ----
     else {
@@ -102,12 +106,15 @@ pub fn main() {
     for arg in args.iter() {
         match arg.as_str() {
             // --------------- COLOR FEATURES ---------------
-            "--colors=grey" => image.to_grey_scale(),
-            "--colors=invert" => image.invert_colors(),
-            "--colors=gamma" => image.gamma_correction(),
+            "--colors=grey" =>      if !image_is_text{image.to_grey_scale();}
+                                    else {eprintln!("Grey text is ugly");},
+            "--colors=invert" =>    if !image_is_text{image.invert_colors();}
+                                    else {eprintln!("RGB is nicer than CMY ;-)");},
+            "--colors=gamma" =>     if !image_is_text{image.gamma_correction();}
+                                    else {eprintln!("Gamma correction on text? You don't need that!");},
             // --------------- MIRROR FEATURES ---------------
             "--mirror=vertical" => image.mirror_vertical(),
-            "--mirror=horizontal" => image.mirror_horizontal(), //FIXME romeo
+            "--mirror=horizontal" => image.mirror_horizontal(),
             // --------------- SCROLL FEATURES ---------------
             "--scroll" => scrolling=true,
             _ => (),
@@ -137,7 +144,7 @@ pub fn main() {
 
     // ------------------------------------ PIXEL RENDERING ------------------------------------
     let parent_method = "main:";
-    println!("{} Showing on matrix ...", parent_method);
+    if PTC {println!("{} Showing on matrix ...", parent_method);}
 
     while interrupt_received.load(Ordering::SeqCst) == false {
         let mut color_clk_mask: gpio_bits_t = 0;
@@ -184,8 +191,8 @@ pub fn main() {
         }
 
         // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
-        //FIXME romeo
-        if(scrolling){
+       
+        if scrolling{
             current_time = time::get_time();
             let diff = current_time - begin;
 
@@ -198,12 +205,13 @@ pub fn main() {
     }
 
     // ------------------------------------ INTERRUPT HANDLER ------------------------------------
+    let print;
     if interrupt_received.load(Ordering::SeqCst) == true {
-        println!("\n{} Received CTRL-C", parent_method);
+        print ="\n(Received CTRL-C)";
     } else {
-        println!("{} Timeout reached", parent_method);
+        print ="\n(Timeout reached)";
     }
-    println!("Exiting...");
+    eprintln!("{} Exiting...",print);
 
     // ------------------------------------ TIMEOUT ------------------------------------
     // timer.nanosleep(...);

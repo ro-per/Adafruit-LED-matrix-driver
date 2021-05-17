@@ -10,7 +10,7 @@ use crate::{COLUMNS, ROWS};
 
 pub struct Frame {
     pos: usize,
-    pixels: Vec<Vec<Pixel>>,
+    pub pixels: Vec<Vec<Pixel>>,
 }
 
 /* The Frame should contain the pixels that are currently shown on the LED board.
@@ -35,8 +35,8 @@ impl Frame {
                 //let image_position = ((self.pos + col*blokgrootte_breedte) as usize % image.width) as usize;
                 let image_position = (self.pos + col) % image.width;
 
-                //let raw_color = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
-                let rgb = &image.pixels[row][col];
+                //let rgb = image.pixels[row*blokgrootte_lengte as usize][image_position].clone();
+                let rgb = image.pixels[row][image_position].clone();
 
                 //rgb waarden naar full color converteren en er dan in zetten (gamma correction)
                 self.pixels[row as usize][col as usize].r = rgb.r as u8;

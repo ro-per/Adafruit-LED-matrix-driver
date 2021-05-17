@@ -118,8 +118,8 @@ pub fn main() {
     // ------------------------------------ INIT FRAME ------------------------------------
     let mut frame = Frame::new();
     //Image inladen in het frame
-    frame.next_image_frame(&image); //FIXME CEDRIC (mag wss weg)
-                                    //Clock starten
+    frame.next_image_frame(&image);
+    //Clock starten
     let mut begin = time::get_time();
     let mut current_time: Timespec;
 
@@ -154,8 +154,8 @@ pub fn main() {
             for cd in 0..COLOR_DEPTH {
                 /* STEP 3. LOOP EACH COLUMN */
                 for col in 0..COLUMNS {
-                    let pixel_top = &image.pixels[row][col];
-                    let pixel_bot = &image.pixels[ROWS / 2 + row][col];
+                    let pixel_top = &frame.pixels[row][col];
+                    let pixel_bot = &frame.pixels[ROWS / 2 + row][col];
 
                     let plane_bits: u32 =
                         GPIO::get_plane_bits(&mut io, &pixel_top, &pixel_bot, cd as i8);
@@ -177,17 +177,17 @@ pub fn main() {
                 GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
             }
         }
+
+        // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
+        current_time = time::get_time();
+        let diff = current_time - begin;
+
+        // snelheid scrollen
+        if diff >= time::Duration::milliseconds(500) {
+            frame.next_image_frame(&image);
+            begin = current_time;
+        };
     }
-
-    // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
-    current_time = time::get_time();
-    let diff = current_time - begin;
-
-    // snelheid scrollen
-    if diff >= time::Duration::milliseconds(10) {
-        frame.next_image_frame(&image);
-        begin = current_time;
-    };
 
     // ------------------------------------ INTERRUPT HANDLER ------------------------------------
     if interrupt_received.load(Ordering::SeqCst) == true {
@@ -201,6 +201,6 @@ pub fn main() {
     // timer.nanosleep(...);
 
     // ------------------------------------ DISABLE OUTPUT PINS ------------------------------------
-    // GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
+    GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
     // timer.nanosleep(...);
 }

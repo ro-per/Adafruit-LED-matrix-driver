@@ -74,6 +74,7 @@ pub fn main() {
     let args: Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
     let mut image: Image;
+    let mut scrolling:bool=false;
 
     // ---- SANITY CHECKS ----
     if nix::unistd::Uid::current().is_root() == false {
@@ -100,11 +101,15 @@ pub fn main() {
 
     for arg in args.iter() {
         match arg.as_str() {
+            // --------------- COLOR FEATURES ---------------
             "--colors=grey" => image.to_grey_scale(),
             "--colors=invert" => image.invert_colors(),
+            "--colors=gamma" => image.gamma_correction(),
+            // --------------- MIRROR FEATURES ---------------
             "--mirror=vertical" => image.mirror_vertical(),
-            "--mirror=horizontal" => image.mirror_horizontal(),
-            "--g" => image.gamma_correction(),
+            "--mirror=horizontal" => image.mirror_horizontal(), //FIXME romeo
+            // --------------- SCROLL FEATURES ---------------
+            "--scroll" => scrolling=true,
             _ => (),
         }
     }
@@ -179,14 +184,17 @@ pub fn main() {
         }
 
         // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
-        current_time = time::get_time();
-        let diff = current_time - begin;
+        //FIXME romeo
+        if(scrolling){
+            current_time = time::get_time();
+            let diff = current_time - begin;
 
-        // snelheid scrollen
-        if diff >= time::Duration::milliseconds(500) {
-            frame.next_image_frame(&image);
-            begin = current_time;
-        };
+            // snelheid scrollen
+            if diff >= time::Duration::milliseconds(500) {
+                frame.next_image_frame(&image);
+                begin = current_time;
+            };
+        }
     }
 
     // ------------------------------------ INTERRUPT HANDLER ------------------------------------

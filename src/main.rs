@@ -77,21 +77,22 @@ pub fn main() {
 
     // ---- SANITY CHECKS ----
     if nix::unistd::Uid::current().is_root() == false {
-        eprintln!("Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command");
+        eprintln!(
+            "Must run as root to be able to access /dev/mem\nPrepend \'sudo\' to the command"
+        );
         std::process::exit(1);
-    } 
-    // ---- CHECK FOR INPUT FILES ----
-    else if args[1].contains(".ppm"){
-        image = Image::read_ppm_image(&args[1],true);
-    } else if args[1].contains(".txt"){
-        image = Image::read_txt_image(&args[1],false);
     }
     // ---- CHECK FOR INPUT FILES ----
-    else{
+    else if args[1].contains(".ppm") {
+        image = Image::read_ppm_image(&args[1], true);
+    } else if args[1].contains(".txt") {
+        image = Image::read_txt_image(&args[1], false);
+    }
+    // ---- CHECK FOR INPUT FILES ----
+    else {
         eprintln!("arg[1] bad format");
         std::process::exit(1);
     }
-    
     //image.print_to_console();
     //Image::show_image(&image); // requires sdl2 import (but takes long to build)
 

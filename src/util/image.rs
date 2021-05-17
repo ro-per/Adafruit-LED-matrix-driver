@@ -147,7 +147,7 @@ impl Image {
         file.read_to_end(&mut raw_file).unwrap();
         // construct a cursor so we can seek in the raw buffer
         let mut cursor = Cursor::new(raw_file);
-        let image = match Image::decode_ppm_image(&mut cursor, scaling) { 
+        let image = match Image::decode_ppm_image(&mut cursor, scaling) {
             Ok(img) => img,
             Err(why) => panic!("Could not parse PPM file - Desc: {}", why),
         };

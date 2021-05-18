@@ -116,7 +116,7 @@ impl Image {
     }
     pub fn print_to_console(&mut self) {
         let parent_method = "Image/print_to_console:";
-        if PTC {println!("{} Printing image of size W{}xH{} ...",parent_method, self.width, self.height);}
+        eprintln!("{} Printing image of size W{}xH{} ...",parent_method, self.width, self.height);
         let mut print: String = "".to_string();
 
         print += "\n";
@@ -128,9 +128,9 @@ impl Image {
             }
             print += "\n";
         }
-        if PTC {
-            println!("{}", print);
-            println!("{} Printing done ...", parent_method);}
+        
+            eprintln!("{}", print);
+            eprintln!("{} Printing done ...", parent_method);
         
     }
     pub fn read_ppm_image(image_path: &String, scaling: bool) -> Image {

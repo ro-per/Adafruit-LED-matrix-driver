@@ -89,6 +89,7 @@ pub fn main() {
     else if args[1].contains(".ppm") {
         image = Image::read_ppm_image(&args[1], true);
         image_is_text = false;
+        image.print_to_console();
     } else if args[1].contains(".txt") {
         image = Image::read_txt_image(&args[1], false);
         image_is_text=true;

@@ -1,7 +1,7 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::image::Image;
 use super::pixel::Pixel;
-use crate::{NUMBER_SPACES,PTC};
+use crate::{NUMBER_SPACES, PTC};
 
 // ==================================== IMPORTS =======================================
 use rand::prelude::*;

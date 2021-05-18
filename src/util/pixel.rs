@@ -7,10 +7,9 @@
 // ===========================================================================
 #[derive(Copy, Clone)]
 pub struct Pixel {
-    // FIXME Romeo: SHOULD NOT BE PRIVATE
-    pub r: u8,
-    pub g: u8,
-    pub b: u8,
+    pub r: u16,
+    pub g: u16,
+    pub b: u16,
 }
 impl Pixel {
     // ==================================== CONSTRUCTOR =======================================
@@ -26,7 +25,7 @@ impl Pixel {
         temp += (self.g as usize) * 7152;
         temp += (self.b as usize) * 722;
 
-        let temp2: u8 = (temp / 3000) as u8;
+        let temp2: u16 = (temp / 3000) as u16;
 
         self.r = temp2;
         self.g = temp2;
@@ -75,12 +74,12 @@ impl Pixel {
     }
 
     pub fn gamma_correction(&mut self) {
-        self.r = Pixel::raw_color_to_full_color(self.r);
-        self.g = Pixel::raw_color_to_full_color(self.g);
-        self.b = Pixel::raw_color_to_full_color(self.b);
+        self.r = self.raw_color_to_full_color(self.r);
+        self.g = self.raw_color_to_full_color(self.g);
+        self.b = self.raw_color_to_full_color(self.b);
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
-    fn raw_color_to_full_color(raw_color: u8) -> u8 {
+    fn raw_color_to_full_color(&self, raw_color: u16) -> u16 {
         //let full_color = ((raw_color as u32)* ((1<<COLOR_DEPTH) -1)/255) as u16;
         let gamma_correction: f32 = 1.75;
 
@@ -88,7 +87,7 @@ impl Pixel {
         let max_value_float = 255 as f32;
 
         let full_color =
-            (max_value_float * (raw_color as f32 / max_value_float).powf(gamma_correction)) as u8;
+            (max_value_float * (raw_color as f32 / max_value_float).powf(gamma_correction)) as u16;
 
         full_color
     }

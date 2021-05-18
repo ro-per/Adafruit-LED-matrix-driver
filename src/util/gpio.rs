@@ -55,7 +55,7 @@ pub struct GPIO {
     gpio_clr_bits_: *mut u32, // A raw pointer that points to the pin output clear register (see section 2.1)
     gpio_read_bits_: *mut u32, // A raw pointer that points to the pin level register (see section 2.1)
     pub row_mask: u32,
-    bitplane_timings: [u32; COLOR_DEPTH],
+    pub bitplane_timings: [u32; COLOR_DEPTH],
 }
 
 impl GPIO {
@@ -120,7 +120,7 @@ impl GPIO {
                 let result: u32 = io.init_outputs(all_used_bits);
                 assert!(result == all_used_bits);
 
-                let mut timing_ns: u32 = 1000;
+                let mut timing_ns: u32 = 200;
                 for b in 0..COLOR_DEPTH {
                     io.bitplane_timings[b] = timing_ns;
                     timing_ns *= 2;

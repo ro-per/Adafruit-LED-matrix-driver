@@ -38,7 +38,9 @@ impl Image {
         scaling: bool,
     ) -> Result<Image, std::io::Error> {
         let parent_method = "Image/decode_ppm_image:";
-        if PTC {println!("{} Decoding ppm image ...", parent_method);}
+        if PTC {
+            println!("{} Decoding ppm image ...", parent_method);
+        }
         let mut image = Image {
             width: 0,
             height: 0,
@@ -67,16 +69,20 @@ impl Image {
                 let blue = cursor.read_u8()?;
 
                 let pixel = Pixel {
-                    r: red,
-                    g: green,
-                    b: blue,
+                    r: red as u16,
+                    g: green as u16,
+                    b: blue as u16,
                 };
                 row.push(pixel);
             }
             image.pixels.push(row);
         }
-        if PTC {println!("W{} H{} ", image.width, image.height);}
-        if PTC {println!("{} Decoding done !", parent_method);}
+        if PTC {
+            println!("W{} H{} ", image.width, image.height);
+        }
+        if PTC {
+            println!("{} Decoding done !", parent_method);
+        }
         if scaling {
             let y_scale = ROWS as f64 / image.height as f64;
             let x_scale = y_scale;
@@ -116,7 +122,10 @@ impl Image {
     }
     pub fn print_to_console(&mut self) {
         let parent_method = "Image/print_to_console:";
-        eprintln!("{} Printing image of size W{}xH{} ...",parent_method, self.width, self.height);
+        eprintln!(
+            "{} Printing image of size W{}xH{} ...",
+            parent_method, self.width, self.height
+        );
         let mut print: String = "".to_string();
 
         print += "\n";
@@ -128,13 +137,14 @@ impl Image {
             }
             print += "\n";
         }
-        
-            eprintln!("{}", print);
-            eprintln!("{} Printing done ...", parent_method);
-        
+
+        eprintln!("{}", print);
+        eprintln!("{} Printing done ...", parent_method);
     }
     pub fn read_ppm_image(image_path: &String, scaling: bool) -> Image {
-        if PTC {println!("Image path = {}", image_path);}
+        if PTC {
+            println!("Image path = {}", image_path);
+        }
         let path = Path::new(&image_path);
         let display = path.display();
         let mut file = match File::open(&path) {
@@ -189,11 +199,16 @@ impl Image {
     fn consume_whitespaces(cursor: &mut Cursor<Vec<u8>>) -> Result<(), std::io::Error> {
         //Result<() : de lege haakjes betekend  niks returnen
         let mut buff: [u8; 1] = [0];
-
         loop {
             cursor.read(&mut buff)?;
             match buff[0] {
-                b' ' | b'\n' | b'\r' | b'\t' => if PTC {println!("\t consumed 1 whitespace")} else{()},
+                b' ' | b'\n' | b'\r' | b'\t' => {
+                    if PTC {
+                        println!("\t consumed 1 whitespace")
+                    } else {
+                        ()
+                    }
+                }
                 _ => {
                     // je zit eigenlijk al te ver nu !!! zet cursor 1 terug
                     cursor.seek(SeekFrom::Current(-1))?;
@@ -203,14 +218,13 @@ impl Image {
         }
         Ok(()) // () : de lege haakjes betekend  niks returnen
     }
-
     fn lin(s: f64, e: f64, t: f64) -> f64 {
         let y = s + (e - s) * t;
         y
     }
 
-    fn bilin(c00: f64, c01: f64, c10: f64, c11: f64, tx: f64, ty: f64) -> u8 {
-        let result = Image::lin(Image::lin(c00, c10, tx), Image::lin(c01, c11, tx), ty) as u8;
+    fn bilin(c00: f64, c01: f64, c10: f64, c11: f64, tx: f64, ty: f64) -> u16 {
+        let result = Image::lin(Image::lin(c00, c10, tx), Image::lin(c01, c11, tx), ty) as u16;
         result
     }
 
@@ -221,7 +235,12 @@ impl Image {
         let new_width = (x_scale * image.width as f64) as u32;
         let new_height = (y_scale * image.height as f64) as u32;
 
-        if PTC{println!("Scaling: {}x{} -> {}x{}",image.height, image.width, new_height, new_width);}
+        if PTC {
+            println!(
+                "Scaling: {}x{} -> {}x{}",
+                image.height, image.width, new_height, new_width
+            );
+        }
         //let diff: usize = COLUMNS - (new_width as usize);
 
         for i in 0..new_height {

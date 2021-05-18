@@ -60,7 +60,7 @@ const COLUMNS: usize = 32;
 const ROWS: usize = 16;
 
 const NUMBER_SPACES: usize = 1;
-const PTC:bool=false;
+const PTC: bool = false;
 
 // MACRO FOR CREATING BITMASKS
 type gpio_bits_t = u32;
@@ -75,8 +75,8 @@ pub fn main() {
     let args: Vec<String> = std::env::args().collect();
     let interrupt_received = Arc::new(AtomicBool::new(false));
     let mut image: Image;
-    let mut scrolling:bool=false;
-    let image_is_text:bool;
+    let mut scrolling: bool = false;
+    let image_is_text: bool;
 
     // ---- SANITY CHECKS ----
     if nix::unistd::Uid::current().is_root() == false {
@@ -92,7 +92,7 @@ pub fn main() {
         image.print_to_console();
     } else if args[1].contains(".txt") {
         image = Image::read_txt_image(&args[1], false);
-        image_is_text=true;
+        image_is_text = true;
     }
     // ---- CHECK FOR INPUT FILES ----
     else {
@@ -107,17 +107,32 @@ pub fn main() {
     for arg in args.iter() {
         match arg.as_str() {
             // --------------- COLOR FEATURES ---------------
-            "--colors=grey" =>      if !image_is_text{image.to_grey_scale();}
-                                    else {eprintln!("Grey text is ugly");},
-            "--colors=invert" =>    if !image_is_text{image.invert_colors();}
-                                    else {eprintln!("RGB is nicer than CMY ;-)");},
-            "--colors=gamma" =>     if !image_is_text{image.gamma_correction();}
-                                    else {eprintln!("Gamma correction on text? You don't need that!");},
+            "--colors=grey" => {
+                if !image_is_text {
+                    image.to_grey_scale();
+                } else {
+                    eprintln!("Grey text is ugly");
+                }
+            }
+            "--colors=invert" => {
+                if !image_is_text {
+                    image.invert_colors();
+                } else {
+                    eprintln!("RGB is nicer than CMY ;-)");
+                }
+            }
+            "--colors=gamma" => {
+                if !image_is_text {
+                    image.gamma_correction();
+                } else {
+                    eprintln!("Gamma correction on text? You don't need that!");
+                }
+            }
             // --------------- MIRROR FEATURES ---------------
             "--mirror=vertical" => image.mirror_vertical(),
             "--mirror=horizontal" => image.mirror_horizontal(),
             // --------------- SCROLL FEATURES ---------------
-            "--scroll" => scrolling=true,
+            "--scroll" => scrolling = true,
             _ => (),
         }
     }
@@ -145,7 +160,9 @@ pub fn main() {
 
     // ------------------------------------ PIXEL RENDERING ------------------------------------
     let parent_method = "main:";
-    if PTC {println!("{} Showing on matrix ...", parent_method);}
+    if PTC {
+        println!("{} Showing on matrix ...", parent_method);
+    }
 
     while interrupt_received.load(Ordering::SeqCst) == false {
         let mut color_clk_mask: gpio_bits_t = 0;
@@ -186,14 +203,16 @@ pub fn main() {
                 GPIO::set_bits(&mut io, GPIO_BIT!(PIN_LAT)); //disable
                 GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_LAT)); //enable
 
-                /* STEP 7. ENABLE OUTPUT PINS */
+                /* STEP 7. ENABLE OUTPUT PINS + COLOR DEPTH STEERING */
                 GPIO::clear_bits(&mut io, GPIO_BIT!(PIN_OE));
+                timer.nanosleep(io.bitplane_timings[cd] as u32);
+                GPIO::set_bits(&mut io, GPIO_BIT!(PIN_OE));
             }
         }
 
         // ------------------------------------ SCROLL FUNCTIONALITY ------------------------------------
-       
-        if scrolling{
+
+        if scrolling {
             current_time = time::get_time();
             let diff = current_time - begin;
 
@@ -208,11 +227,11 @@ pub fn main() {
     // ------------------------------------ INTERRUPT HANDLER ------------------------------------
     let print;
     if interrupt_received.load(Ordering::SeqCst) == true {
-        print ="\n(Received CTRL-C)";
+        print = "\n(Received CTRL-C)";
     } else {
-        print ="\n(Timeout reached)";
+        print = "\n(Timeout reached)";
     }
-    eprintln!("{} Exiting...",print);
+    eprintln!("{} Exiting...", print);
 
     // ------------------------------------ TIMEOUT ------------------------------------
     // timer.nanosleep(...);

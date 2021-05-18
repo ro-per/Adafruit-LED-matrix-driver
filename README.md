@@ -23,6 +23,8 @@
 - [x] ``` --mirror=horizontal ```
 #### Other Effects
 - [x] ``` --scroll ```
+### 1.C NEWS API
+- [x] ```cd text; python3 Main.py; cd ..; sudo cargo run text/LatestNews.txt --scroll ```
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)

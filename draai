@@ -16,6 +16,7 @@ sudo cargo run ppm/kuleuven_logo.ppm --scroll
 
 sudo cargo run ppm/linux.ppm
 sudo cargo run ppm/linux.ppm --scroll
+sudo cargo run ppm/raspberry.ppm --scroll
 
 sudo cargo run ppm/google.ppm
 sudo cargo run ppm/google.ppm --colors=grey

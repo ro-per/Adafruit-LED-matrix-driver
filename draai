@@ -25,9 +25,10 @@ sudo cargo run ppm/google.ppm --colors=gamma
 
 
 sudo cargo run text/A-Z.txt
-sudo cargo run text/A-Z.txt --scroll
 sudo cargo run text/A-Z.txt --mirror=vertical
-sudo cargo run text/A-Z.txt --scroll --mirror=horizontal
 
-sudo cargo run text/news.txt --scroll
+cd text; python3 Main.py; cd ..; sudo cargo run text/LatestNews.txt --scroll 
+
+
+!!!!!! opgepast
 

@@ -93,33 +93,41 @@ impl Charset {
                             b: pix.b,
                         };
                         pixel.invert_colors();
-                        if pixel.is_white() {
-                            pixel.set_color(p);
-                        }
+                        // if pixel.is_white() {
+                        //     pixel.set_color(p);
+                        // }
 
                         column.push(pixel);
                     }
-                    // BLACK PIX
-                    for _ in 0..2 {
-                        let pixel = Pixel { r: 0, g: 0, b: 0 };
-                        column.push(pixel);
-                    }
-
                     // ACTUAL TEXT
                     for row in a..b {
-                        let pix = self.ppm_charset.pixels[row][col];
-
-                        let mut pixel = Pixel {
-                            r: pix.r,
-                            g: pix.g,
-                            b: pix.b,
-                        };
-                        pixel.invert_colors();
-                        if pixel.is_white() {
-                            pixel.set_color(p);
-                        }
-
+                        let pixel = Pixel { r: 0, g: 0, b: 0 };
                         column.push(pixel);
+
+                        // let pix = self.ppm_charset.pixels[row][col];
+
+                        // let mut pixel = Pixel {
+                        //     r: pix.r,
+                        //     g: pix.g,
+                        //     b: pix.b,
+                        // };
+                        // pixel.invert_colors();
+                        // if pixel.is_white() {
+                        //     pixel.set_color(p);
+                        // }
+
+                        // column.push(pixel);
+                    }
+
+                    // BLACK PIX
+                    for _ in 0..2 {
+                        let pixel;
+                        if col % 3==0 {
+                            pixel = Pixel { r: 255, g: 255, b: 255 };
+                        }else{
+                            pixel = Pixel { r: 255, g: 0, b:  0};
+                        }
+                        column.push(p);
                     }
 
                     text_matrix.push(column);

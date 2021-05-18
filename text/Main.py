@@ -12,7 +12,7 @@ eenlijn = ""
 print("Making LatestNews.txt file")
 for i in range(len(response.json()["articles"])):
        antwoord = response.json()["articles"][i]
-       eenlijn = eenlijn + antwoord['title'] + " | "
+       eenlijn = eenlijn + antwoord['title'].replace("’","").replace("“","").replace("”","").replace("‘","").replace(" ","  ") + "  |  "
 
 text_file.write(eenlijn)
 text_file.close()

@@ -1,25 +1,32 @@
+1) R - structuur in aparte files
+2) R - smart check for input file format --> zie demo
+3) R - smart check for arguments --> zie demo
+4) C - scrolling
+5) N - scaling
+6) N - kleurdiepte --> helderheid
+7) R - KILLER FEAUTRE charset --> zie demo
+8) C - news api
 
 
+DEMO (Romeo)
 
-DEMO (Nick)
+sudo cargo run ppm/kuleuven_logo.ppm
+sudo cargo run ppm/kuleuven_logo.ppm --mirror=vertical
+sudo cargo run ppm/kuleuven_logo.ppm --scroll
 
-ppm/kuleuven_logo.ppm
-ppm/kuleuven_logo.ppm --mirror=horizontal
-ppm/kuleuven_logo.ppm --scroll
+sudo cargo run ppm/linux.ppm
+sudo cargo run ppm/linux.ppm --scroll
 
-ppm/linux.ppm
-ppm/linux.ppm --scroll
-ppm/linux.ppm --scroll --mirror=vertical
-
-ppm/ubuntu.ppm --colors=grey
-ppm/ubuntu.ppm --colors=invert
-ppm/ubuntu.ppm --colors=gamma
+sudo cargo run ppm/google.ppm
+sudo cargo run ppm/google.ppm --colors=grey
+sudo cargo run ppm/google.ppm --colors=invert
+sudo cargo run ppm/google.ppm --colors=gamma
 
 
-text/A-Z.txt
-text/A-Z.txt --scroll
-text/A-Z.txt --mirror=vertical
-text/A-Z.txt --scroll --mirror=vertical
+sudo cargo run text/A-Z.txt
+sudo cargo run text/A-Z.txt --scroll
+sudo cargo run text/A-Z.txt --mirror=vertical
+sudo cargo run text/A-Z.txt --scroll --mirror=horizontal
 
-text/news.txt --scroll
+sudo cargo run text/news.txt --scroll
 

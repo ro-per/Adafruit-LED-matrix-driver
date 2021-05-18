@@ -215,7 +215,7 @@ pub fn main() {
             let diff = current_time - begin;
 
             // snelheid scrollen
-            if diff >= time::Duration::milliseconds(500) {
+            if diff >= time::Duration::milliseconds(250) {
                 frame.next_image_frame(&image);
                 begin = current_time;
             };

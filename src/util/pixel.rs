@@ -21,15 +21,15 @@ impl Pixel {
     // normal averaging of channels (https://www.kdnuggets.com/2019/12/convert-rgb-image-grayscale.html)
     pub fn to_grey_scale(&mut self) {
         let mut temp: usize = 0;
-        temp += (self.r as usize) * 2126;
-        temp += (self.g as usize) * 7152;
-        temp += (self.b as usize) * 722;
+        temp += (self.r as usize)*2126;
+        temp += (self.g as usize)*7152;
+        temp += (self.b as usize)*722;
 
-        let temp2: u16 = (temp / 3000) as u16;
+        let temp2: u8 = (temp / 3000) as u8;
 
-        self.r = temp2;
-        self.g = temp2;
-        self.b = temp2;
+        self.r = temp2 as u16;
+        self.g = temp2 as u16;
+        self.b = temp2 as u16;
     }
     pub fn invert_colors(&mut self) {
         self.r = 255 - self.r;

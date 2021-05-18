@@ -11,13 +11,12 @@ use util::mmap_bcm_register::*;
 // ==================================== CRATES =======================================
 extern crate ctrlc;
 extern crate libc;
-extern crate time;
-#[macro_use]
-extern crate simple_error;
 extern crate mmap;
 extern crate nix;
 extern crate rand;
 extern crate shuteye;
+extern crate simple_error;
+extern crate time;
 
 // ==================================== USE =======================================
 use std::fs::File;
@@ -25,6 +24,7 @@ use std::io::prelude::*;
 use std::io::{Cursor, Error, ErrorKind, Read, Seek, SeekFrom};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
+
 use time::Timespec;
 //use sdl2::pixels::Color;
 //use sdl2::rect::Rect;
@@ -63,7 +63,7 @@ const NUMBER_SPACES: usize = 1;
 const PTC: bool = false;
 
 // MACRO FOR CREATING BITMASKS
-type gpio_bits_t = u32;
+type GpioBitsT = u32;
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit
@@ -91,7 +91,7 @@ pub fn main() {
         image_is_text = false;
         image.print_to_console();
     } else if args[1].contains(".txt") {
-        image = Image::read_txt_image(&args[1], false);
+        image = Image::read_txt_image(&args[1]);
         image_is_text = true;
     }
     // ---- CHECK FOR INPUT FILES ----
@@ -165,7 +165,7 @@ pub fn main() {
     }
 
     while interrupt_received.load(Ordering::SeqCst) == false {
-        let mut color_clk_mask: gpio_bits_t = 0;
+        let mut color_clk_mask: GpioBitsT = 0;
         color_clk_mask |= GPIO_BIT!(PIN_R1)
             | GPIO_BIT!(PIN_G1)
             | GPIO_BIT!(PIN_B1)
@@ -174,7 +174,7 @@ pub fn main() {
             | GPIO_BIT!(PIN_B2)
             | GPIO_BIT!(PIN_CLK);
 
-        let mut row_mask: gpio_bits_t = 0;
+        let mut row_mask: GpioBitsT = 0;
         row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */

@@ -4,13 +4,13 @@ use crate::*;
 
 // ==================================== EXTERN IMPORTS =======================================
 use byteorder::ReadBytesExt;
+use std::io;
 use std::io::{Cursor, Read, Seek, SeekFrom};
 
 // ===========================================================================
 // REPRESENTATION OF THE 'RAW' IMAGE
 // ===========================================================================
 pub struct Image {
-    // FIXME Romeo: SHOULD NOT BE PRIVATE
     pub width: usize,  // 32
     pub height: usize, //16
     pub pixels: Vec<Vec<Pixel>>,
@@ -33,10 +33,7 @@ impl Image {
         self.width = self.pixels[0].len();
         self.height = self.pixels.len();
     }
-    pub fn decode_ppm_image(
-        cursor: &mut Cursor<Vec<u8>>,
-        scaling: bool,
-    ) -> Result<Image, std::io::Error> {
+    pub fn decode_ppm_image(cursor: &mut Cursor<Vec<u8>>, scaling: bool) -> io::Result<Image> {
         let parent_method = "Image/decode_ppm_image:";
         if PTC {
             println!("{} Decoding ppm image ...", parent_method);
@@ -162,18 +159,18 @@ impl Image {
         };
         image
     }
-    pub fn read_txt_image(txt_path: &String, scaling: bool) -> Image {
+    pub fn read_txt_image(txt_path: &String) -> Image {
         let mut file = File::open(txt_path).expect("Unable to open the file");
         let mut contents = String::new();
         file.read_to_string(&mut contents)
             .expect("Unable to read the file");
-        let text = String::from(contents); // FIXME Romeo: remove tabs and newlines !!!
+        let text = String::from(contents);
         let character_set_regular = Charset::new();
         let image = character_set_regular.get_text(text, true); // True means random RGB value per letter
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
-    fn read_number(cursor: &mut Cursor<Vec<u8>>) -> Result<usize, std::io::Error> {
+    fn read_number(cursor: &mut Cursor<Vec<u8>>) -> io::Result<usize> {
         let parent_method = "Image/read_number:";
         Image::consume_whitespaces(cursor)?;
 
@@ -196,8 +193,7 @@ impl Image {
         //return Ok(num); andere mogelijke return
     }
 
-    fn consume_whitespaces(cursor: &mut Cursor<Vec<u8>>) -> Result<(), std::io::Error> {
-        //Result<() : de lege haakjes betekend  niks returnen
+    fn consume_whitespaces(cursor: &mut Cursor<Vec<u8>>) -> io::Result<()> {
         let mut buff: [u8; 1] = [0];
         loop {
             cursor.read(&mut buff)?;

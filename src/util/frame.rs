@@ -51,10 +51,6 @@ impl Frame {
         }
     }
     // ==================================== PRIVATE FUNCTIONS =======================================
-
-    fn clear_frame(self: &mut Frame) {
-        self.pixels = vec![vec![Pixel::new(); COLUMNS as usize]; ROWS as usize];
-    }
     fn raw_to_full_color(&self, raw: u16) -> u16 {
         let full_color = raw * ((1 << COLOR_DEPTH) - 1) / 255;
         full_color

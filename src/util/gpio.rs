@@ -23,7 +23,7 @@ Would be OK: if GPIO_BIT!(PIN_A) & VALID_BITS {io.configure_output_pin(PIN_A);}*
 // ============================================================================
 
 // MACRO FOR CREATING BITMASKS
-type gpio_bits_t = u32;
+type GpioBitsT = u32;
 macro_rules! GPIO_BIT {
     ($bit:expr) => {
         1 << $bit
@@ -90,7 +90,7 @@ impl GPIO {
                     io.gpio_read_bits_ = io.gpio_port_.offset(0x34 / 4);
                 }
 
-                let mut all_used_bits: gpio_bits_t = 0;
+                let mut all_used_bits: GpioBitsT = 0;
 
                 all_used_bits |= GPIO_BIT!(PIN_OE) | GPIO_BIT!(PIN_CLK) | GPIO_BIT!(PIN_LAT);
                 all_used_bits |= GPIO_BIT!(PIN_R1)
@@ -173,7 +173,7 @@ impl GPIO {
         pin
     }
     pub fn get_plane_bits(self: &GPIO, top: &Pixel, bot: &Pixel, plane: i8) -> u32 {
-        let mut out: gpio_bits_t = 0;
+        let mut out: GpioBitsT = 0;
         if top.r & (1 << plane) != 0 {
             out |= GPIO_BIT!(PIN_R1);
         }

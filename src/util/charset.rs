@@ -1,7 +1,7 @@
 // ==================================== PROJECT IMPORTS =======================================
 use super::image::Image;
 use super::pixel::Pixel;
-use crate::{NUMBER_SPACES, PTC};
+use crate::NUMBER_SPACES;
 
 // ==================================== IMPORTS =======================================
 use rand::prelude::*;
@@ -131,7 +131,6 @@ impl Charset {
         // ------------------------------ CONVERT INTO AN IMAGE ------------------------------
         let image = Image::new(text_matrix_transpose);
         // ------------------------------ (PRINT) AND RETURN IMAGE ------------------------------
-        //image.print_to_console(); //BUG Romeo
         image
     }
     // ==================================== PRIVATE FUNCTIONS =======================================

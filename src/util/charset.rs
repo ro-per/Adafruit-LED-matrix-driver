@@ -188,7 +188,7 @@ fn init_pixel_map() -> HashMap<char, Vec<usize>> {
     mapping.insert('8', vec![141, 145]);
     mapping.insert('9', vec![148, 152]);
 
-    // Letters (ALL UPPERCASE)
+    // Letters (ALL LOWERCASE)
     mapping.insert('a', vec![191, 196]);
     mapping.insert('b', vec![199, 203]);
     mapping.insert('c', vec![206, 210]);

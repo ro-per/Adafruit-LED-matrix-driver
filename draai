@@ -1,0 +1,25 @@
+
+
+
+DEMO (Nick)
+
+ppm/kuleuven_logo.ppm
+ppm/kuleuven_logo.ppm --mirror=horizontal
+ppm/kuleuven_logo.ppm --scroll
+
+ppm/linux.ppm
+ppm/linux.ppm --scroll
+ppm/linux.ppm --scroll --mirror=vertical
+
+ppm/ubuntu.ppm --colors=grey
+ppm/ubuntu.ppm --colors=invert
+ppm/ubuntu.ppm --colors=gamma
+
+
+text/A-Z.txt
+text/A-Z.txt --scroll
+text/A-Z.txt --mirror=vertical
+text/A-Z.txt --scroll --mirror=vertical
+
+text/news.txt --scroll
+

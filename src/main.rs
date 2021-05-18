@@ -20,10 +20,8 @@ extern crate time;
 
 // ==================================== USE =======================================
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{Cursor, Error, ErrorKind, Read, Seek, SeekFrom};
+
 use std::path::Path;
-use std::time::{Duration, SystemTime};
 
 use time::Timespec;
 //use sdl2::pixels::Color;
@@ -141,7 +139,7 @@ pub fn main() {
     let mut io = GPIO::new(1); //Slowdown = 2 mag je mee spelen
 
     // ------------------------------------ INIT TIMER ------------------------------------
-    let mut timer = Timer::new();
+    let timer = Timer::new();
 
     // ------------------------------------ INIT FRAME ------------------------------------
     let mut frame = Frame::new();
@@ -174,8 +172,8 @@ pub fn main() {
             | GPIO_BIT!(PIN_B2)
             | GPIO_BIT!(PIN_CLK);
 
-        let mut row_mask: GpioBitsT = 0;
-        row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
+        // let mut row_mask: GpioBitsT = 0;
+        // row_mask |= GPIO_BIT!(PIN_A) | GPIO_BIT!(PIN_B) | GPIO_BIT!(PIN_C) | GPIO_BIT!(PIN_CLK);
 
         /* STEP 1. LOOP EACH (DOUBLE) ROW */
         for row in 0..ROWS / 2 {

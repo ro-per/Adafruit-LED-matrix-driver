@@ -10,15 +10,18 @@
 ## 1. Effects                             <a name="I"></a>
 ### 1.A Possibles Modes
 - [x] Show a picture ```arg[1]=<picture>.ppm``` (lab 3)
-- [x] Show a text ```arg[1]=<picture>.ppm arg[2]=--text``` (killer feature)
+- [x] Show a text ```arg[1]=<text>.txt``` (killer feature)
 ### 1.B Possibles Effects 
 (pass to arg[x] after passing mode arguments)
+#### Color Effects
 - [x] ``` --colors=grey ```
 - [x] ``` --colors=invert ```
-- [x] ``` --g ``` (gamma correction)
+- [x] ``` --colors=gamma ```
+#### Mirror Effects
 - [x] ``` --mirror=vertical```
 - [x] ``` --mirror=horizontal ```
-
+#### Other Effects
+- [x] ``` --scroll ```
 
 ## 2. Authors                              <a name="II"></a>
 - [Nick Braeckman](https://github.com/NickBraeckman)
@@ -27,7 +30,8 @@
 
 
 ## 3. Links                               <a name="III"></a>
-- [Rust bindings for C++ Library](https://github.com/rust-rpi-led-matrix/rust-rpi-rgb-led-matrix) (see below)
+- [Working Repository](https://github.com/ro-per/VS-Project-LED-Matrix)
+- [Publish Repository](https://github.com/ku-leuven-msec/veiligesoftware-20202021-groep1)
 - [C++ Library](https://github.com/hzeller/rpi-rgb-led-matrix) for driving RGB-Matrix
 - [Lab 1: Debugging C and CPP with GDB](https://github.com/ro-per/VS-Lab1_Debugging_C_CPP_with_GDB)
 - [Lab 2: Memory Exploits in C](https://github.com/ro-per/VS-Lab2_Memory_Exploits_in_C)

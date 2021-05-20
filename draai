@@ -10,25 +10,23 @@
 
 DEMO (Romeo)
 
-sudo cargo run ppm/kuleuven_logo.ppm
-sudo cargo run ppm/kuleuven_logo.ppm --mirror=vertical
-sudo cargo run ppm/kuleuven_logo.ppm --scroll
+-------------------- STATISCH EN SPIEGELEN --------------------
+sudo ./target/release/rust_ncr    ppm/kuleuven_logo.ppm
+sudo ./target/release/rust_ncr    ppm/kuleuven_logo.ppm --mirror=vertical
+sudo ./target/release/rust_ncr    ppm/kuleuven_logo.ppm --mirror=horizontal
 
-sudo cargo run ppm/linux.ppm
-sudo cargo run ppm/linux.ppm --scroll
-sudo cargo run ppm/raspberry.ppm --scroll
+-------------------- SCROLLING --------------------
+sudo ./target/release/rust_ncr    ppm/kuleuven_logo.ppm --scroll
+sudo ./target/release/rust_ncr    ppm/raspberry.ppm --scroll
+sudo ./target/release/rust_ncr    ppm/linux.ppm --scroll
 
-sudo cargo run ppm/google.ppm
-sudo cargo run ppm/google.ppm --colors=grey
-sudo cargo run ppm/google.ppm --colors=invert
-sudo cargo run ppm/google.ppm --colors=gamma
+-------------------- KLEUREN --------------------
+sudo ./target/release/rust_ncr    ppm/google.ppm
+sudo ./target/release/rust_ncr    ppm/google.ppm --colors=grey
+sudo ./target/release/rust_ncr    ppm/google.ppm --colors=invert
+sudo ./target/release/rust_ncr    ppm/google.ppm --colors=gamma
 
-
-sudo cargo run text/A-Z.txt
-sudo cargo run text/A-Z.txt --mirror=vertical
-
-cd text; python3 Main.py; cd ..; sudo cargo run text/LatestNews.txt --scroll 
-
-
-!!!!!! opgepast
+-------------------- TEXT --------------------
+cd text; python3 Main.py; cd ..
+sudo ./target/release/rust_ncr    text/LatestNews.txt --scroll
 

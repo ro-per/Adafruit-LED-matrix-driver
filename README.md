@@ -1,4 +1,4 @@
-#IDP-LabSessions
+# About this project
 - [IIW KU LEUVEN](https://iiw.kuleuven.be/)
 - [Teacher: Stijn Volckaert](https://github.com/stijn-volckaert)
 - [Course: Veilige Software](https://onderwijsaanbod.kuleuven.be//2020/syllabi/n/JPI12LN.htm#activetab=doelstellingen_idp4512256)

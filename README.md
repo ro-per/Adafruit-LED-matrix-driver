@@ -1,3 +1,13 @@
+#IDP-LabSessions
+- [IIW KU LEUVEN](https://iiw.kuleuven.be/)
+- [Teacher: Stijn Volckaert](https://github.com/stijn-volckaert)
+- [Course: Veilige Software](https://onderwijsaanbod.kuleuven.be//2020/syllabi/n/JPI12LN.htm#activetab=doelstellingen_idp4512256)
+- Subject: Project
+
+See [assignement](assignement.md) for more info.
+
+
+
 # Adafruit LED matrix driver in rust
 ```Image``` -> ```Vec<Frame> ``` --> ```RGB Matrix```
 # Table of contents 

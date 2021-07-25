@@ -1,19 +1,20 @@
-# About this project
+# Adafruit LED matrix driver in rust
+## Authors
+- [Nick Braeckman](https://github.com/NickBraeckman)
+- [Cedric Lefevre](https://github.com/Cedric-Lefevre)
+- [Romeo Permentier](https://github.com/ro-per)
+
+## About this project
 - [IIW KU LEUVEN](https://iiw.kuleuven.be/)
+
 - [Teacher: Stijn Volckaert](https://github.com/stijn-volckaert)
 - [Course: Veilige Software](https://onderwijsaanbod.kuleuven.be//2020/syllabi/n/JPI12LN.htm#activetab=doelstellingen_idp4512256)
 - Subject: Project
-
 See [assignement](assignement.md) for more info.
 
-
-
-# Adafruit LED matrix driver in rust
-```Image``` -> ```Vec<Frame> ``` --> ```RGB Matrix```
-# Table of contents 
+## Table of contents 
 1. [Effects](#I)
-2. [Authors](#II)
-3. [Links](#III)
+2. [Links](#II)
 
 ![RGB Matrix example 1](rgb_matrix_1.png "RGB Matrix example 1")
 ![RGB Matrix example 2](rgb_matrix_2.png "RGB Matrix example 2")
@@ -36,13 +37,7 @@ See [assignement](assignement.md) for more info.
 ### 1.C NEWS API
 - [x] ```cd text; python3 Main.py; cd ..; sudo cargo run text/LatestNews.txt --scroll ```
 
-## 2. Authors                              <a name="II"></a>
-- [Nick Braeckman](https://github.com/NickBraeckman)
-- [Cedric Lefevre](https://github.com/Cedric-Lefevre)
-- [Romeo Permentier](https://github.com/ro-per)
-
-
-## 3. Links                               <a name="III"></a>
+## 2. Links                               <a name="II"></a>
 - [Working Repository](https://github.com/ro-per/VS-Project-LED-Matrix)
 - [Publish Repository](https://github.com/ku-leuven-msec/veiligesoftware-20202021-groep1)
 - [C++ Library](https://github.com/hzeller/rpi-rgb-led-matrix) for driving RGB-Matrix
